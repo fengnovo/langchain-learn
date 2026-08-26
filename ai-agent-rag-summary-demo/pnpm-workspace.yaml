@@ -1,0 +1,10 @@
+fetchTimeout: 1200000
+fetchRetries: 5
+networkConcurrency: 4
+verifyDepsBeforeRun: false
+
+ignoredOptionalDependencies:
+  - '@huggingface/transformers'
+
+allowBuilds:
+  esbuild: true
