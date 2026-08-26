@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="920" viewBox="0 0 1400 920">
+  <style>
+    text { font-family: Arial, "PingFang SC", sans-serif; fill:#111; }
+    .title { font-size: 28px; font-weight: 700; }
+    .box { fill:#fff; stroke:#111; stroke-width:2; rx:14; }
+    .group { fill:#fafafa; stroke:#555; stroke-width:2; stroke-dasharray:8 6; rx:18; }
+    .label { font-size:20px; font-weight:700; }
+    .small { font-size:16px; }
+    .arrow { stroke:#111; stroke-width:2.4; marker-end:url(#arrow); fill:none; }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#111"/>
+    </marker>
+  </defs>
+  <text x="700" y="45" text-anchor="middle" class="title">Demo 10-B 生产增强版总体架构</text>
+  <rect x="525" y="75" width="350" height="70" class="box"/>
+  <text x="700" y="118" text-anchor="middle" class="label">React AI Console</text>
+  <rect x="525" y="185" width="350" height="75" class="box"/>
+  <text x="700" y="218" text-anchor="middle" class="label">Node.js API</text>
+  <text x="700" y="243" text-anchor="middle" class="small">REST / SSE / Metrics</text>
+  <rect x="360" y="305" width="680" height="255" class="group"/>
+  <text x="700" y="338" text-anchor="middle" class="label">LangGraph Agent Runtime</text>
+  <rect x="405" y="365" width="200" height="65" class="box"/>
+  <text x="505" y="405" text-anchor="middle" class="small">RAG Context</text>
+  <rect x="600" y="365" width="200" height="65" class="box"/>
+  <text x="700" y="405" text-anchor="middle" class="small">Planner</text>
+  <rect x="795" y="365" width="200" height="65" class="box"/>
+  <text x="895" y="405" text-anchor="middle" class="small">MCP Context</text>
+  <rect x="405" y="465" width="180" height="65" class="box"/>
+  <text x="495" y="505" text-anchor="middle" class="small">Frontend Agent</text>
+  <rect x="610" y="465" width="180" height="65" class="box"/>
+  <text x="700" y="505" text-anchor="middle" class="small">Backend Agent</text>
+  <rect x="815" y="465" width="180" height="65" class="box"/>
+  <text x="905" y="505" text-anchor="middle" class="small">QA Agent</text>
+  <rect x="80" y="640" width="260" height="130" class="box"/>
+  <text x="210" y="680" text-anchor="middle" class="label">RAG</text>
+  <text x="210" y="710" text-anchor="middle" class="small">bge-m3</text>
+  <text x="210" y="737" text-anchor="middle" class="small">PostgreSQL + pgvector</text>
+  <rect x="390" y="640" width="260" height="130" class="box"/>
+  <text x="520" y="680" text-anchor="middle" class="label">MCP v2</text>
+  <text x="520" y="710" text-anchor="middle" class="small">stdio Client / Server</text>
+  <text x="520" y="737" text-anchor="middle" class="small">search_code / read_doc</text>
+  <rect x="700" y="640" width="260" height="130" class="box"/>
+  <text x="830" y="680" text-anchor="middle" class="label">Harness</text>
+  <text x="830" y="710" text-anchor="middle" class="small">Security / Type / Test</text>
+  <text x="830" y="737" text-anchor="middle" class="small">Quality Gate</text>
+  <rect x="1010" y="640" width="310" height="130" class="box"/>
+  <text x="1165" y="680" text-anchor="middle" class="label">Observability</text>
+  <text x="1165" y="710" text-anchor="middle" class="small">OTel / Langfuse / Prometheus</text>
+  <text x="1165" y="737" text-anchor="middle" class="small">Sentry / Feishu / Eval</text>
+  <rect x="470" y="825" width="460" height="65" class="box"/>
+  <text x="700" y="865" text-anchor="middle" class="label">Reviewer → Final Result</text>
+  <path d="M700 145 L700 185" class="arrow"/>
+  <path d="M700 260 L700 305" class="arrow"/>
+  <path d="M700 338 L700 365" class="arrow"/>
+  <path d="M700 430 L495 465" class="arrow"/>
+  <path d="M700 430 L700 465" class="arrow"/>
+  <path d="M700 430 L905 465" class="arrow"/>
+  <path d="M505 365 L210 640" class="arrow"/>
+  <path d="M895 365 L520 640" class="arrow"/>
+  <path d="M495 530 L830 640" class="arrow"/>
+  <path d="M700 530 L830 640" class="arrow"/>
+  <path d="M905 530 L830 640" class="arrow"/>
+  <path d="M830 770 L700 825" class="arrow"/>
+  <path d="M1165 770 L930 850" class="arrow"/>
+</svg>

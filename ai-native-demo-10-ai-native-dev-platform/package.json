@@ -1,0 +1,22 @@
+{
+ "name": "ai-native-platform",
+ "private": true,
+ "scripts": {
+  "dev": "pnpm --parallel --filter ./apps/* dev"
+ },
+ "workspaces": [
+  "apps/*",
+  "packages/*"
+ ],
+ "version": "1.0.0",
+ "description": "这是整个 AI Native 学习路线的综合项目。",
+ "main": "index.js",
+ "directories": {
+  "doc": "docs"
+ },
+ "devDependencies": {},
+ "keywords": [],
+ "author": "",
+ "license": "ISC",
+ "type": "commonjs"
+}

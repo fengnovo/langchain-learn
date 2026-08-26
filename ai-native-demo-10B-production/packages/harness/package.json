@@ -1,0 +1,24 @@
+{
+  "name": "@demo/harness",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx src/index.test.ts",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@demo/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.5",
+    "typescript": "^6.0.0"
+  },
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

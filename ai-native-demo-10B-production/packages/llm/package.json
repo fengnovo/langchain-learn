@@ -1,0 +1,23 @@
+{
+  "name": "@demo/llm",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node -e \"console.log('llm: no tests')\"",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "openai": "7.5.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.0"
+  },
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

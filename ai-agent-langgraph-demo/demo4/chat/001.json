@@ -1,0 +1,196 @@
+{
+ "s001": {
+  "checkpoint": {
+   "v": 4,
+   "id": "1f1a152e-b2c3-6850-8003-05bfbd0bb9d8",
+   "ts": "2026-08-26T13:34:53.013Z",
+   "channel_values": {
+    "messages": [
+     {
+      "lc": 1,
+      "type": "constructor",
+      "id": [
+       "langchain_core",
+       "messages",
+       "HumanMessage"
+      ],
+      "kwargs": {
+       "content": "使用天地同寿算法计算25和7",
+       "additional_kwargs": {},
+       "response_metadata": {},
+       "id": "7229c9dd-c4e4-47f3-96ce-05730f23d133"
+      }
+     },
+     {
+      "lc": 1,
+      "type": "constructor",
+      "id": [
+       "langchain_core",
+       "messages",
+       "AIMessageChunk"
+      ],
+      "kwargs": {
+       "content": "我来为您使用天地同寿算法计算25和7。\n\n",
+       "additional_kwargs": {
+        "reasoning_content": "The user wants me to use the \"天地同寿算法\" (Tiandi Tongshou algorithm) to calculate with the numbers 25 and 7. I have a custom tool called `custom_calc` that is specifically described as being used when the user asks to calculate the \"天地同寿算法\". I should call this tool with a=25 and b=7.",
+        "tool_calls": [
+         {
+          "id": "call_2be4ed6b1f15407fa505b139",
+          "type": "function",
+          "index": 0,
+          "function": {
+           "name": "custom_calc",
+           "arguments": "{\"a\": 25, \"b\": 7}"
+          }
+         }
+        ]
+       },
+       "response_metadata": {
+        "model_provider": "openai",
+        "usage": {
+         "prompt_tokens": 344,
+         "total_tokens": 476,
+         "completion_tokens": 132,
+         "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 344
+         },
+         "completion_tokens_details": {
+          "reasoning_tokens": 78,
+          "text_tokens": 132
+         }
+        }
+       },
+       "tool_call_chunks": [
+        {
+         "name": "custom_calc",
+         "args": "{\"a\": 25, \"b\": 7}",
+         "id": "call_2be4ed6b1f15407fa505b139",
+         "index": 0,
+         "type": "tool_call_chunk"
+        }
+       ],
+       "tool_calls": [
+        {
+         "name": "custom_calc",
+         "args": {
+          "a": 25,
+          "b": 7
+         },
+         "id": "call_2be4ed6b1f15407fa505b139",
+         "type": "tool_call"
+        }
+       ],
+       "id": "chatcmpl-867d8f7c-e494-9d9a-aacc-3b9620d752d1",
+       "usage_metadata": {
+        "input_tokens": 344,
+        "output_tokens": 132,
+        "total_tokens": 476,
+        "input_token_details": {
+         "cache_read": 0
+        },
+        "output_token_details": {
+         "reasoning": 78
+        }
+       },
+       "invalid_tool_calls": []
+      }
+     },
+     {
+      "lc": 1,
+      "type": "constructor",
+      "id": [
+       "langchain_core",
+       "messages",
+       "ToolMessage"
+      ],
+      "kwargs": {
+       "status": "success",
+       "content": "计算结果为：1032",
+       "tool_call_id": "call_2be4ed6b1f15407fa505b139",
+       "name": "custom_calc",
+       "metadata": {
+        "versions": {
+         "@langchain/core": "1.2.9"
+        }
+       },
+       "additional_kwargs": {},
+       "response_metadata": {},
+       "id": "run-01a03e47-d657-72fd-95e1-1819397c2594-tool-call_2be4ed6b1f15407fa505b139"
+      }
+     },
+     {
+      "lc": 1,
+      "type": "constructor",
+      "id": [
+       "langchain_core",
+       "messages",
+       "AIMessageChunk"
+      ],
+      "kwargs": {
+       "content": "使用天地同寿算法计算 **25** 和 **7** 的结果为：\n\n## **1032**\n\n这就是天地同寿算法对这两个数字的计算结果。",
+       "additional_kwargs": {
+        "reasoning_content": "计算结果是1032。这是天地同寿算法对25和7的计算结果。我需要向用户报告这个结果。\n"
+       },
+       "response_metadata": {
+        "model_provider": "openai",
+        "usage": {
+         "prompt_tokens": 420,
+         "total_tokens": 489,
+         "completion_tokens": 69,
+         "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 420
+         },
+         "completion_tokens_details": {
+          "reasoning_tokens": 27,
+          "text_tokens": 69
+         }
+        }
+       },
+       "tool_call_chunks": [],
+       "tool_calls": [],
+       "id": "chatcmpl-f0a6d883-4130-9796-9ca6-c85fe51618e5",
+       "usage_metadata": {
+        "input_tokens": 420,
+        "output_tokens": 69,
+        "total_tokens": 489,
+        "input_token_details": {
+         "cache_read": 0
+        },
+        "output_token_details": {
+         "reasoning": 27
+        }
+       },
+       "invalid_tool_calls": []
+      }
+     }
+    ],
+    "__pregel_tasks": []
+   },
+   "channel_versions": {
+    "__start__": 2,
+    "messages": 5,
+    "branch:to:agent": 5,
+    "branch:to:tools": 4
+   },
+   "versions_seen": {
+    "__input__": {},
+    "__start__": {
+     "__start__": 1
+    },
+    "agent": {
+     "branch:to:agent": 4
+    },
+    "tools": {
+     "branch:to:tools": 3
+    }
+   }
+  },
+  "metadata": {
+   "source": "loop",
+   "step": 3,
+   "parents": {}
+  }
+ }
+}

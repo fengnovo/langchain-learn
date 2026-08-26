@@ -1,0 +1,342 @@
+{
+ "s001": [
+  {
+   "type": "human",
+   "data": {
+    "content": "使用天地同寿算法计算5和7",
+    "additional_kwargs": {},
+    "response_metadata": {},
+    "id": "118b7cac-ce34-43fa-9543-a2fc20fa5498"
+   }
+  },
+  {
+   "type": "ai",
+   "data": {
+    "id": "chatcmpl-fdd6333e-fe49-9eb8-84c3-bf252c2881b7",
+    "content": "",
+    "additional_kwargs": {
+     "tool_calls": [
+      {
+       "id": "call_af139cb84e8147079ec0da7c",
+       "type": "function",
+       "function": {
+        "name": "custom_calc",
+        "arguments": "{\"a\": 5, \"b\": 7}"
+       },
+       "index": 0
+      }
+     ],
+     "reasoning_content": "用户要求使用\"天地同寿算法\"来计算5和7。根据工具描述，我有一个名为`custom_calc`的工具，当用户让我计算\"天地同寿算法\"时使用。\n\n我需要调用这个工具，参数a=5，b=7。"
+    },
+    "response_metadata": {
+     "tokenUsage": {
+      "promptTokens": 343,
+      "completionTokens": 92,
+      "totalTokens": 435
+     },
+     "finish_reason": "tool_calls",
+     "model_provider": "openai",
+     "model_name": "qwen3.7-plus-2026-05-26",
+     "usage": {
+      "prompt_tokens": 343,
+      "total_tokens": 435,
+      "completion_tokens": 92,
+      "prompt_tokens_details": {
+       "cached_tokens": 0,
+       "text_tokens": 343
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 53,
+       "text_tokens": 92
+      }
+     }
+    },
+    "type": "ai",
+    "tool_calls": [
+     {
+      "name": "custom_calc",
+      "args": {
+       "a": 5,
+       "b": 7
+      },
+      "type": "tool_call",
+      "id": "call_af139cb84e8147079ec0da7c"
+     }
+    ],
+    "invalid_tool_calls": [],
+    "usage_metadata": {
+     "output_tokens": 92,
+     "input_tokens": 343,
+     "total_tokens": 435,
+     "input_token_details": {
+      "cache_read": 0
+     },
+     "output_token_details": {
+      "reasoning": 53
+     }
+    }
+   }
+  },
+  {
+   "type": "tool",
+   "data": {
+    "status": "success",
+    "content": "计算结果为：1012",
+    "tool_call_id": "call_af139cb84e8147079ec0da7c",
+    "name": "custom_calc",
+    "metadata": {
+     "versions": {
+      "@langchain/core": "1.2.9"
+     }
+    },
+    "additional_kwargs": {},
+    "response_metadata": {},
+    "id": "3cf06378-673a-4c81-8f76-801c1b6b35a1"
+   }
+  },
+  {
+   "type": "ai",
+   "data": {
+    "id": "chatcmpl-c42ae736-86b8-9e4c-b1c2-73c9b795af81",
+    "content": "根据天地同寿算法，5和7的计算结果为：**1012**。",
+    "additional_kwargs": {
+     "reasoning_content": "用户要求使用\"天地同寿算法\"计算5和7。\n我已经调用了工具 custom_calc，传入参数 a=5, b=7。\n工具返回结果为 1012。\n\n现在我需要把这个结果告诉用户。\n不需要再做其他操作，直接回复用户即可。"
+    },
+    "response_metadata": {
+     "tokenUsage": {
+      "promptTokens": 404,
+      "completionTokens": 81,
+      "totalTokens": 485
+     },
+     "finish_reason": "stop",
+     "model_provider": "openai",
+     "model_name": "qwen3.7-plus-2026-05-26",
+     "usage": {
+      "prompt_tokens": 404,
+      "total_tokens": 485,
+      "completion_tokens": 81,
+      "prompt_tokens_details": {
+       "cached_tokens": 0,
+       "text_tokens": 404
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 61,
+       "text_tokens": 81
+      }
+     }
+    },
+    "type": "ai",
+    "tool_calls": [],
+    "invalid_tool_calls": [],
+    "usage_metadata": {
+     "output_tokens": 81,
+     "input_tokens": 404,
+     "total_tokens": 485,
+     "input_token_details": {
+      "cache_read": 0
+     },
+     "output_token_details": {
+      "reasoning": 61
+     }
+    }
+   }
+  },
+  {
+   "type": "human",
+   "data": {
+    "content": "使用天地同寿算法计算5和17",
+    "additional_kwargs": {},
+    "response_metadata": {},
+    "id": "d50e0947-7597-458a-9122-fc5a9747b94f"
+   }
+  },
+  {
+   "type": "ai",
+   "data": {
+    "id": "chatcmpl-581e0a3c-b285-93cc-a33f-d7ef18366522",
+    "content": "",
+    "additional_kwargs": {
+     "tool_calls": [
+      {
+       "id": "call_7a07f35284a34a4a854a3217",
+       "type": "function",
+       "function": {
+        "name": "custom_calc",
+        "arguments": "{\"a\": 5, \"b\": 17}"
+       },
+       "index": 0
+      }
+     ],
+     "reasoning_content": "用户要求使用天地同寿算法计算5和17。\n我需要调用custom_calc工具，传入a=5, b=17。"
+    },
+    "response_metadata": {
+     "tokenUsage": {
+      "promptTokens": 437,
+      "completionTokens": 70,
+      "totalTokens": 507
+     },
+     "finish_reason": "tool_calls",
+     "model_provider": "openai",
+     "model_name": "qwen3.7-plus-2026-05-26",
+     "usage": {
+      "prompt_tokens": 437,
+      "total_tokens": 507,
+      "completion_tokens": 70,
+      "prompt_tokens_details": {
+       "cached_tokens": 0,
+       "text_tokens": 437
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 30,
+       "text_tokens": 70
+      }
+     }
+    },
+    "type": "ai",
+    "tool_calls": [
+     {
+      "name": "custom_calc",
+      "args": {
+       "a": 5,
+       "b": 17
+      },
+      "type": "tool_call",
+      "id": "call_7a07f35284a34a4a854a3217"
+     }
+    ],
+    "invalid_tool_calls": [],
+    "usage_metadata": {
+     "output_tokens": 70,
+     "input_tokens": 437,
+     "total_tokens": 507,
+     "input_token_details": {
+      "cache_read": 0
+     },
+     "output_token_details": {
+      "reasoning": 30
+     }
+    }
+   }
+  },
+  {
+   "type": "tool",
+   "data": {
+    "status": "success",
+    "content": "计算结果为：1022",
+    "tool_call_id": "call_7a07f35284a34a4a854a3217",
+    "name": "custom_calc",
+    "metadata": {
+     "versions": {
+      "@langchain/core": "1.2.9"
+     }
+    },
+    "additional_kwargs": {},
+    "response_metadata": {},
+    "id": "71204d17-c8c3-4c23-b29a-5f5907db8853"
+   }
+  },
+  {
+   "type": "ai",
+   "data": {
+    "id": "chatcmpl-5ea1d251-8376-92d7-9445-afcac6c24e55",
+    "content": "根据天地同寿算法，5和17的计算结果为：**1022**。",
+    "additional_kwargs": {
+     "reasoning_content": "思考过程：1.  **分析请求**：用户要求使用“天地同寿算法”计算5和17。\n2.  **调用工具**：根据系统提示，当用户要求使用“天地同寿算法”时，必须调用`custom_calc`工具，传入参数`a=5`和`b=17`。\n3.  **获取结果**：工具返回结果为`1022`。\n4.  **构建回复**：向用户展示计算结果，保持与上一轮对话一致的格式。\n\n*自我检查*：\n- 是否调用了正确的工具？是，`custom_calc`。\n- 参数是否正确？是，`a=5`, `b=17`。\n- 回复是否准确反映了工具的输出？是，1022。\n- 语气是否自然、符合助手身份？是。\n\n直接输出结果即可。"
+    },
+    "response_metadata": {
+     "tokenUsage": {
+      "promptTokens": 499,
+      "completionTokens": 215,
+      "totalTokens": 714
+     },
+     "finish_reason": "stop",
+     "model_provider": "openai",
+     "model_name": "qwen3.7-plus-2026-05-26",
+     "usage": {
+      "prompt_tokens": 499,
+      "total_tokens": 714,
+      "completion_tokens": 215,
+      "prompt_tokens_details": {
+       "cached_tokens": 0,
+       "text_tokens": 499
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 194,
+       "text_tokens": 215
+      }
+     }
+    },
+    "type": "ai",
+    "tool_calls": [],
+    "invalid_tool_calls": [],
+    "usage_metadata": {
+     "output_tokens": 215,
+     "input_tokens": 499,
+     "total_tokens": 714,
+     "input_token_details": {
+      "cache_read": 0
+     },
+     "output_token_details": {
+      "reasoning": 194
+     }
+    }
+   }
+  },
+  {
+   "type": "human",
+   "data": {
+    "content": "我刚才让你干啥了",
+    "additional_kwargs": {},
+    "response_metadata": {},
+    "id": "106188d9-75b6-4efe-ad2a-91b6a6f564a4"
+   }
+  },
+  {
+   "type": "ai",
+   "data": {
+    "id": "chatcmpl-337492c9-31fa-995a-bc17-d779703be6b7",
+    "content": "您刚才让我使用“天地同寿算法”进行了两次计算：\n\n1. 第一次是计算 **5 和 7**，得出的结果是 **1012**。\n2. 第二次是计算 **5 和 17**，得出的结果是 **1022**。",
+    "additional_kwargs": {
+     "reasoning_content": "思考过程：1.  **分析用户的意图**：用户问“我刚才让你干啥了”，这是在询问对话历史，测试我的上下文记忆能力。\n2.  **回顾对话历史**：\n    *   第一轮：用户让我“使用天地同寿算法计算5和7”，我调用了`custom_calc`工具并返回结果1012。\n    *   第二轮：用户让我“使用天地同寿算法计算5和17”，我调用了`custom_calc`工具并返回结果1022。\n    *   第三轮（当前）：用户问“我刚才让你干啥了”。\n3.  **总结刚才的任务**：用户刚才让我使用了“天地同寿算法”分别计算了“5和7”以及“5和17”。\n4.  **构建回复**：用自然、清晰的语言概括前两轮的任务。可以分点说明，也可以连贯叙述。\n    *   “您刚才让我使用‘天地同寿算法’进行了两次计算：”\n    *   “第一次是计算 5 和 7，结果是 1012。”\n    *   “第二次是计算 5 和 17，结果是 1022。”\n5.  **输出结果**：生成最终回复。无须调用工具。"
+    },
+    "response_metadata": {
+     "tokenUsage": {
+      "promptTokens": 529,
+      "completionTokens": 346,
+      "totalTokens": 875
+     },
+     "finish_reason": "stop",
+     "model_provider": "openai",
+     "model_name": "qwen3.7-plus-2026-05-26",
+     "usage": {
+      "prompt_tokens": 529,
+      "total_tokens": 875,
+      "completion_tokens": 346,
+      "prompt_tokens_details": {
+       "cached_tokens": 0,
+       "text_tokens": 529
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 282,
+       "text_tokens": 346
+      }
+     }
+    },
+    "type": "ai",
+    "tool_calls": [],
+    "invalid_tool_calls": [],
+    "usage_metadata": {
+     "output_tokens": 346,
+     "input_tokens": 529,
+     "total_tokens": 875,
+     "input_token_details": {
+      "cache_read": 0
+     },
+     "output_token_details": {
+      "reasoning": 282
+     }
+    }
+   }
+  }
+ ]
+}

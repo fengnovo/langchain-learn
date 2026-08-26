@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1450" height="520" viewBox="0 0 1450 520">
+  <style>
+    text { font-family: Arial, "PingFang SC", sans-serif; fill:#111; }
+    .box { fill:#fff; stroke:#111; stroke-width:2; rx:12; }
+    .label { font-size:17px; font-weight:700; }
+    .small { font-size:14px; }
+    .arrow { stroke:#111; stroke-width:2; marker-end:url(#arrow); fill:none; }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#111"/>
+    </marker>
+  </defs>
+  <rect x="30" y="210" width="160" height="70" class="box"/>
+  <text x="110" y="250" text-anchor="middle" class="label">用户需求</text>
+  <rect x="235" y="210" width="170" height="70" class="box"/>
+  <text x="320" y="242" text-anchor="middle" class="label">RAG 检索</text>
+  <text x="320" y="263" text-anchor="middle" class="small">TopK Context</text>
+  <rect x="450" y="210" width="170" height="70" class="box"/>
+  <text x="535" y="242" text-anchor="middle" class="label">MCP 查询</text>
+  <text x="535" y="263" text-anchor="middle" class="small">代码 / 文档</text>
+  <rect x="665" y="210" width="170" height="70" class="box"/>
+  <text x="750" y="250" text-anchor="middle" class="label">Planner</text>
+  <rect x="890" y="70" width="180" height="70" class="box"/>
+  <text x="980" y="110" text-anchor="middle" class="label">Frontend</text>
+  <rect x="890" y="210" width="180" height="70" class="box"/>
+  <text x="980" y="250" text-anchor="middle" class="label">Backend</text>
+  <rect x="890" y="350" width="180" height="70" class="box"/>
+  <text x="980" y="390" text-anchor="middle" class="label">QA</text>
+  <rect x="1120" y="210" width="150" height="70" class="box"/>
+  <text x="1195" y="250" text-anchor="middle" class="label">Reviewer</text>
+  <rect x="1310" y="210" width="120" height="70" class="box"/>
+  <text x="1370" y="242" text-anchor="middle" class="label">Harness</text>
+  <text x="1370" y="263" text-anchor="middle" class="small">Gate</text>
+  <path d="M190 245 L235 245" class="arrow"/>
+  <path d="M405 245 L450 245" class="arrow"/>
+  <path d="M620 245 L665 245" class="arrow"/>
+  <path d="M835 245 L890 105" class="arrow"/>
+  <path d="M835 245 L890 245" class="arrow"/>
+  <path d="M835 245 L890 385" class="arrow"/>
+  <path d="M1070 105 L1120 235" class="arrow"/>
+  <path d="M1070 245 L1120 245" class="arrow"/>
+  <path d="M1070 385 L1120 255" class="arrow"/>
+  <path d="M1270 245 L1310 245" class="arrow"/>
+</svg>

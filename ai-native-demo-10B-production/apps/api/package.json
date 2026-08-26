@@ -1,0 +1,29 @@
+{
+  "name": "@demo/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=../../.env --import tsx --import ./src/instrumentation.ts src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node -e \"console.log('api: use agent-core tests')\"",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@demo/agent-core": "workspace:*",
+    "@demo/observability": "workspace:*",
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "tsx": "^4.20.5",
+    "typescript": "^6.0.0"
+  },
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

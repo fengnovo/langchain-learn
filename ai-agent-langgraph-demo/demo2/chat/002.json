@@ -1,0 +1,172 @@
+{
+ "s002": [
+  {
+   "type": "human",
+   "data": {
+    "content": "我刚才让你干啥了",
+    "additional_kwargs": {},
+    "response_metadata": {},
+    "id": "b5652976-f6d0-4913-9eb2-2f95095ef56c"
+   }
+  },
+  {
+   "type": "ai",
+   "data": {
+    "id": "chatcmpl-103d3232-e348-9ce9-81e9-413cd51a55a0",
+    "content": "这是我们对话的开始，之前你没有让我做过任何事情哦。这是你的第一条消息。\n\n有什么我可以帮你的吗？",
+    "additional_kwargs": {
+     "reasoning_content": "用户在问我\"刚才让你干啥了\"，但这是对话的开始，之前没有任何对话历史。我需要诚实地告诉用户，这是我们对话的开始，之前没有收到过任何指令。\n\n让我检查一下上下文：\n- 系统提示中定义了一个工具 `custom_calc`，用于\"天地同寿算法\"\n- 用户的第一条消息是\"我刚才让你干啥了\"\n- 没有之前的对话历史\n\n所以我应该告诉用户，这是我们的第一次对话，之前没有收到过任何指令。"
+    },
+    "response_metadata": {
+     "tokenUsage": {
+      "promptTokens": 340,
+      "completionTokens": 130,
+      "totalTokens": 470
+     },
+     "finish_reason": "stop",
+     "model_provider": "openai",
+     "model_name": "qwen3.7-plus-2026-05-26",
+     "usage": {
+      "prompt_tokens": 340,
+      "total_tokens": 470,
+      "completion_tokens": 130,
+      "prompt_tokens_details": {
+       "cached_tokens": 0,
+       "text_tokens": 340
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 104,
+       "text_tokens": 130
+      }
+     }
+    },
+    "type": "ai",
+    "tool_calls": [],
+    "invalid_tool_calls": [],
+    "usage_metadata": {
+     "output_tokens": 130,
+     "input_tokens": 340,
+     "total_tokens": 470,
+     "input_token_details": {
+      "cache_read": 0
+     },
+     "output_token_details": {
+      "reasoning": 104
+     }
+    }
+   }
+  },
+  {
+   "type": "human",
+   "data": {
+    "content": "你好，我是Keen，是是谁",
+    "additional_kwargs": {},
+    "response_metadata": {},
+    "id": "a143ea92-6a72-4546-9e57-326c785e7977"
+   }
+  },
+  {
+   "type": "ai",
+   "data": {
+    "id": "chatcmpl-7d131514-6b56-972b-ad1c-7a0294609648",
+    "content": "你好，Keen！我是人工智能助手。很高兴认识你！请问有什么我可以帮你的吗？",
+    "additional_kwargs": {
+     "reasoning_content": "用户问“我是Keen，是是谁”，这里有个小笔误，应该是“你是谁”。\n我需要回答我是谁。\n我是一个人工智能助手。\n用户自我介绍叫Keen。\n我应该友好地回应，并介绍自己。\n\n思考过程：\n1. 识别用户的输入：用户自我介绍（Keen），并询问我的身份（“是是谁” -> “你是谁”）。\n2. 构建回复：\n   - 问候用户（你好，Keen！）。\n   - 回答用户的问题（我是人工智能助手）。\n   - 询问如何提供帮助。\n\n草稿：\n你好，Keen！我是人工智能助手。很高兴认识你！有什么我可以帮你的吗？\n\n检查是否有特定工具需要调用：没有。\n检查是否符合人设：符合，我是一个AI助手。\n\n最终回复：\n你好，Keen！我是人工智能助手。很高兴认识你！请问有什么我可以帮你的吗？"
+    },
+    "response_metadata": {
+     "tokenUsage": {
+      "promptTokens": 381,
+      "completionTokens": 213,
+      "totalTokens": 594
+     },
+     "finish_reason": "stop",
+     "model_provider": "openai",
+     "model_name": "qwen3.7-plus-2026-05-26",
+     "usage": {
+      "prompt_tokens": 381,
+      "total_tokens": 594,
+      "completion_tokens": 213,
+      "prompt_tokens_details": {
+       "cached_tokens": 0,
+       "text_tokens": 381
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 190,
+       "text_tokens": 213
+      }
+     }
+    },
+    "type": "ai",
+    "tool_calls": [],
+    "invalid_tool_calls": [],
+    "usage_metadata": {
+     "output_tokens": 213,
+     "input_tokens": 381,
+     "total_tokens": 594,
+     "input_token_details": {
+      "cache_read": 0
+     },
+     "output_token_details": {
+      "reasoning": 190
+     }
+    }
+   }
+  },
+  {
+   "type": "human",
+   "data": {
+    "content": "我是谁",
+    "additional_kwargs": {},
+    "response_metadata": {},
+    "id": "32686fe0-e1f6-4202-94fb-d88420126b38"
+   }
+  },
+  {
+   "type": "ai",
+   "data": {
+    "id": "chatcmpl-43fb2a2b-3305-930b-bac4-35e123a919f2",
+    "content": "你刚才介绍过啦，你是 Keen！请问有什么我可以帮你的吗？",
+    "additional_kwargs": {
+     "reasoning_content": "思考过程：1.  **分析用户的输入**：用户问“我是谁”。\n2.  **回忆上下文**：\n    *   第一轮：用户问“我刚才让你干啥了”，我回答这是对话开始。\n    *   第二轮：用户说“你好，我是Keen，是是谁”，我回答“你好，Keen！我是人工智能助手...”。\n    *   第三轮：用户问“我是谁”。\n3.  **确定答案**：根据第二轮对话，用户自己介绍过他叫“Keen”。\n4.  **构建回复**：直接告诉用户他刚才介绍过自己叫Keen。保持礼貌和友好。\n5.  **输出结果**：你刚才介绍过啦，你是 Keen！有什么我可以帮你的吗？"
+    },
+    "response_metadata": {
+     "tokenUsage": {
+      "promptTokens": 413,
+      "completionTokens": 190,
+      "totalTokens": 603
+     },
+     "finish_reason": "stop",
+     "model_provider": "openai",
+     "model_name": "qwen3.7-plus-2026-05-26",
+     "usage": {
+      "prompt_tokens": 413,
+      "total_tokens": 603,
+      "completion_tokens": 190,
+      "prompt_tokens_details": {
+       "cached_tokens": 0,
+       "text_tokens": 413
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 170,
+       "text_tokens": 190
+      }
+     }
+    },
+    "type": "ai",
+    "tool_calls": [],
+    "invalid_tool_calls": [],
+    "usage_metadata": {
+     "output_tokens": 190,
+     "input_tokens": 413,
+     "total_tokens": 603,
+     "input_token_details": {
+      "cache_read": 0
+     },
+     "output_token_details": {
+      "reasoning": 170
+     }
+    }
+   }
+  }
+ ]
+}
