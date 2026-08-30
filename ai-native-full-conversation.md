@@ -2341,7 +2341,7 @@ Demo 03-B 企业级RAG
 增加：
 1. PDF/Markdown解析
 2. Chunk策略
-3. bge-m3 Embedding
+3. qwen3.7-text-embedding Embedding
 4. pgvector
 5. TopK召回
 6. Rerank
@@ -2354,7 +2354,7 @@ Demo 03-B 企业级RAG
 增加：
 1. PDF/Markdown解析
 2. Chunk策略
-3. bge-m3 Embedding
+3. qwen3.7-text-embedding Embedding
 4. pgvector
 5. TopK召回
 6. Rerank
@@ -2441,7 +2441,7 @@ Chunk2:
 支付回调
 ```
 ---
-# 3. bge-m3 Embedding
+# 3. qwen3.7-text-embedding Embedding
 增加说明：
 文本：
 ``` id="gjvk04"
@@ -2456,7 +2456,7 @@ Chunk2:
 用于语义搜索。
 后续真实实现会接：
 ```text id="qeo9id"
-bge-m3
+qwen3.7-text-embedding
 ↓
 Embedding API
 ↓
@@ -4568,7 +4568,7 @@ Observability
 AI Dev Platform
 ```
 下面是做 **Demo 10-B 生产增强版**，把这个骨架真正跑成一个类似企业内部 AI Coding Agent 的系统。
-这个版本不是单纯骨架，而是一个 64 文件的 Monorepo，包含 React Web、Node API、真实 LangGraph StateGraph 编排、Frontend/Backend/QA fan-out + Reviewer fan-in、真实 MCP TypeScript SDK v2 stdio Client/Server、bge-m3 + pgvector RAG、Harness 质量门禁、OpenTelemetry、Langfuse、Prometheus、Grafana、Sentry、飞书告警和 Agent 质量评分。  
+这个版本不是单纯骨架，而是一个 64 文件的 Monorepo，包含 React Web、Node API、真实 LangGraph StateGraph 编排、Frontend/Backend/QA fan-out + Reviewer fan-in、真实 MCP TypeScript SDK v2 stdio Client/Server、qwen3.7-text-embedding + pgvector RAG、Harness 质量门禁、OpenTelemetry、Langfuse、Prometheus、Grafana、Sentry、飞书告警和 Agent 质量评分。  
 README 里已经放入两张实际 SVG 架构图，以及完整目录、请求链路、Mock/Production 两种运行方式和面试讲解。docs/ 另外有 7 份逐步教程，你可以按顺序实操。  
 默认：
 ```
@@ -4604,7 +4604,7 @@ MOCK_MODE=false
 ```
 接上你的 Qwen/OpenAI-Compatible 模型，以及：
 ```
-Ollama bge-m3
+Ollama qwen3.7-text-embedding
 +
 PostgreSQL
 +

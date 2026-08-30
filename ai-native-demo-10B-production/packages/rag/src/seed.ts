@@ -1,36 +1,36 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-import OpenAI from "openai";
-import pg from "pg";
-import pgvector from "pgvector/pg";
-import { chunkText } from "./index.js";
-if (process.env.MOCK_MODE !== "false") {
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import OpenAI from 'openai';
+import pg from 'pg';
+import pgvector from 'pgvector/pg';
+import { chunkText } from './index.js';
+if (process.env.MOCK_MODE !== 'false') {
   console.error(
-    "当前 MOCK_MODE=true。要写入真实 pgvector，请先把 .env 中 MOCK_MODE 改为 false。"
+    '当前 MOCK_MODE=true。要写入真实 pgvector，请先把 .env 中 MOCK_MODE 改为 false。',
   );
   process.exit(1);
 }
-const root = path.resolve(process.cwd(), "../../mock-company");
+const root = path.resolve(process.cwd(), '../../mock-company');
 const files = await walk(root);
 const embeddingClient = new OpenAI({
-  apiKey: process.env.EMBEDDING_API_KEY ?? "ollama",
-  baseURL: process.env.EMBEDDING_BASE_URL ?? "http://localhost:11434/v1"
+  apiKey: process.env.EMBEDDING_API_KEY ?? 'ollama',
+  baseURL: process.env.EMBEDDING_BASE_URL ?? 'http://localhost:11434/v1',
 });
 const pool = new pg.Pool({
-  connectionString: process.env.DATABASE_URL
+  connectionString: process.env.DATABASE_URL,
 });
 const client = await pool.connect();
 try {
   await pgvector.registerTypes(client);
-  await client.query("TRUNCATE TABLE knowledge_chunks RESTART IDENTITY");
+  await client.query('TRUNCATE TABLE knowledge_chunks RESTART IDENTITY');
   for (const file of files) {
     const source = path.relative(root, file);
-    const text = await fs.readFile(file, "utf-8");
+    const text = await fs.readFile(file, 'utf-8');
     const chunks = chunkText(text);
     for (const [index, content] of chunks.entries()) {
       const response = await embeddingClient.embeddings.create({
-        model: process.env.EMBEDDING_MODEL ?? "bge-m3",
-        input: content
+        model: process.env.EMBEDDING_MODEL ?? 'qwen3.7-text-embedding',
+        input: content,
       });
       const embedding = response.data[0]?.embedding;
       if (!embedding) {
@@ -48,13 +48,13 @@ try {
           index,
           content,
           JSON.stringify({ source, index }),
-          pgvector.toSql(embedding)
-        ]
+          pgvector.toSql(embedding),
+        ],
       );
       console.log(`seeded: ${source}#${index}`);
     }
   }
-  console.log("RAG seed 完成。");
+  console.log('RAG seed 完成。');
 } finally {
   client.release();
   await pool.end();

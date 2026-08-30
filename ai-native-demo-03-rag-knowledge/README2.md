@@ -13,7 +13,7 @@
 增加真实企业场景能力：
 1.  PDF/Markdown解析
 2.  Chunk策略设计
-3.  bge-m3 Embedding
+3.  qwen3.7-text-embedding Embedding
 4.  PostgreSQL + pgvector
 5.  TopK召回
 6.  Rerank排序

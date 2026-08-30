@@ -38,7 +38,7 @@ app.post('/chat', async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
   const stream = await client.chat.completions.create({
-    model: 'qwen3.7-plus-2026-05-26',
+    model: 'qwen3.8-flash',
     messages,
     stream: true,
   });
@@ -47,21 +47,16 @@ app.post('/chat', async (req, res) => {
    * 每一次循环就是一个 token。
    */
   for await (const chunk of stream) {
-    const content =
-      chunk.choices[0]?.delta?.content || '';
-    if(content){
+    const content = chunk.choices[0]?.delta?.content || '';
+    if (content) {
       // SSE 格式
-      res.write(
-        `data: ${JSON.stringify(content)}\n\n`
-      );
+      res.write(`data: ${JSON.stringify(content)}\n\n`);
     }
   }
   // 告诉浏览器结束
   res.write('data: [DONE]\n\n');
   res.end();
 });
-app.listen(3000,()=>{
- console.log(
-   'AI server running: http://localhost:3000'
- );
+app.listen(3000, () => {
+  console.log('AI server running: http://localhost:3000');
 });

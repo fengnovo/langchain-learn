@@ -2342,7 +2342,7 @@ Demo 03-B 企业级RAG
 增加：
 1. PDF/Markdown解析
 2. Chunk策略
-3. bge-m3 Embedding
+3. qwen3.7-text-embedding Embedding
 4. pgvector
 5. TopK召回
 6. Rerank
@@ -2355,7 +2355,7 @@ Demo 03-B 企业级RAG
 增加：
 1. PDF/Markdown解析
 2. Chunk策略
-3. bge-m3 Embedding
+3. qwen3.7-text-embedding Embedding
 4. pgvector
 5. TopK召回
 6. Rerank
@@ -2442,7 +2442,7 @@ Chunk2:
 支付回调
 ```
 ---
-## 3. bge-m3 Embedding
+## 3. qwen3.7-text-embedding Embedding
 增加说明：
 文本：
 ``` id="gjvk04"
@@ -2457,7 +2457,7 @@ Chunk2:
 用于语义搜索。
 后续真实实现会接：
 ```text id="qeo9id"
-bge-m3
+qwen3.7-text-embedding
 ↓
 Embedding API
 ↓
@@ -4573,7 +4573,7 @@ AI Dev Platform
 继续做一个有价值的Demo 10-B 生产增强版
 Demo 10-B 生产增强版已经完成，并重新做了一轮生产化修正。
 [下载 Demo 10-B：AI Native Dev Platform 生产增强版](sandbox:/mnt/data/ai-native-demo-10B-production.zip)
-这个版本不是单纯骨架，而是一个 64 文件的 Monorepo，包含 React Web、Node API、真实 LangGraph `StateGraph` 编排、Frontend/Backend/QA fan-out + Reviewer fan-in、真实 MCP TypeScript SDK v2 stdio Client/Server、bge-m3 + pgvector RAG、Harness 质量门禁、OpenTelemetry、Langfuse、Prometheus、Grafana、Sentry、飞书告警和 Agent 质量评分。
+这个版本不是单纯骨架，而是一个 64 文件的 Monorepo，包含 React Web、Node API、真实 LangGraph `StateGraph` 编排、Frontend/Backend/QA fan-out + Reviewer fan-in、真实 MCP TypeScript SDK v2 stdio Client/Server、qwen3.7-text-embedding + pgvector RAG、Harness 质量门禁、OpenTelemetry、Langfuse、Prometheus、Grafana、Sentry、飞书告警和 Agent 质量评分。
 README 里已经放入两张实际 SVG 架构图，以及完整目录、请求链路、Mock/Production 两种运行方式和面试讲解。`docs/` 另外有 7 份逐步教程，你可以按顺序实操。
 默认：
 ```env id="ewfy3l"
@@ -4609,7 +4609,7 @@ MOCK_MODE=false
 ```
 接上你的 Qwen/OpenAI-Compatible 模型，以及：
 ```text id="1iexv3"
-Ollama bge-m3
+Ollama qwen3.7-text-embedding
 +
 PostgreSQL
 +

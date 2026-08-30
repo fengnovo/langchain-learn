@@ -24,13 +24,13 @@ text.slice(0, 1000)
 - metadata
 - document permission
 ---
-## 3. bge-m3
-`EmbeddingProvider` 通过 OpenAI-Compatible embeddings API 调用 bge-m3。
+## 3. qwen3.7-text-embedding
+`EmbeddingProvider` 通过 OpenAI-Compatible embeddings API 调用 qwen3.7-text-embedding。
 默认示例：
 ```text
 Ollama
 http://localhost:11434/v1
-model=bge-m3
+model=qwen3.7-text-embedding
 ```
 ---
 ## 4. pgvector

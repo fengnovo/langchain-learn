@@ -35,7 +35,7 @@
   <text x="905" y="505" text-anchor="middle" class="small">QA Agent</text>
   <rect x="80" y="640" width="260" height="130" class="box"/>
   <text x="210" y="680" text-anchor="middle" class="label">RAG</text>
-  <text x="210" y="710" text-anchor="middle" class="small">bge-m3</text>
+  <text x="210" y="710" text-anchor="middle" class="small">qwen3.7-text-embedding</text>
   <text x="210" y="737" text-anchor="middle" class="small">PostgreSQL + pgvector</text>
   <rect x="390" y="640" width="260" height="130" class="box"/>
   <text x="520" y="680" text-anchor="middle" class="label">MCP v2</text>

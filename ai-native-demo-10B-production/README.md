@@ -7,7 +7,7 @@
 - LangGraph `StateGraph`
 - fan-out / fan-in 多 Agent
 - MCP TypeScript SDK v2
-- RAG + bge-m3 + PostgreSQL/pgvector
+- RAG + qwen3.7-text-embedding + PostgreSQL/pgvector
 - AI Coding Harness
 - OpenTelemetry
 - Langfuse
@@ -72,7 +72,7 @@ ai-native-demo-10B-production
 ├── packages
 │   ├── shared              # 公共类型
 │   ├── llm                 # 模型抽象，Mock / OpenAI-Compatible
-│   ├── rag                 # bge-m3 + pgvector
+│   ├── rag                 # qwen3.7-text-embedding + pgvector
 │   ├── mcp-client          # MCP v2 Client
 │   ├── harness             # 质量门禁
 │   ├── observability       # OTel / Langfuse / Prometheus / Sentry
@@ -112,7 +112,7 @@ MOCK_MODE=true
 ```
 特点：
 - 不需要 LLM Key
-- 不需要 bge-m3
+- 不需要 qwen3.7-text-embedding
 - RAG 有内置 mock fallback
 - MCP 仍然使用真实 MCP v2 协议
 - LangGraph 是真实执行
@@ -129,15 +129,14 @@ MOCK_MODE=false
 ```env
 LLM_API_KEY=...
 LLM_BASE_URL=...
-LLM_MODEL=qwen-plus
-EMBEDDING_BASE_URL=http://localhost:11434/v1
+LLM_MODEL=qwen3.8-flashEMBEDDING_BASE_URL=http://localhost:11434/v1
 EMBEDDING_API_KEY=ollama
-EMBEDDING_MODEL=bge-m3
+EMBEDDING_MODEL=qwen3.7-text-embedding
 DATABASE_URL=postgresql://ai_native:ai_native@localhost:5432/ai_native
 ```
 然后：
 ```bash
-ollama pull bge-m3
+ollama pull qwen3.7-text-embedding
 docker compose up -d postgres
 pnpm rag:seed
 pnpm dev
@@ -146,7 +145,7 @@ pnpm dev
 ```text
 Query
  ↓
-bge-m3 Embedding
+qwen3.7-text-embedding Embedding
  ↓
 pgvector cosine distance
  ↓
@@ -315,7 +314,7 @@ Request → Runtime → Agent Graph → Tool/MCP
 ---
 # 12. 面试时怎么介绍这个项目
 可以概括成：
-> 基于 TypeScript Monorepo 构建 AI Native Dev Platform，通过 LangGraph StateGraph 实现多 Agent fan-out/fan-in 编排；以 MCP v2 标准接入代码与企业文档工具；使用 bge-m3 + pgvector 构建企业 RAG；通过 Harness 在 Agent 输出后执行安全及质量门禁；通过 OpenTelemetry、Langfuse、Prometheus、Grafana 与 Sentry 建立 Agent Trace、Token、延迟、错误和质量评分体系。系统支持 Mock/Production 双模式，方便本地开发和生产环境渐进接入。
+> 基于 TypeScript Monorepo 构建 AI Native Dev Platform，通过 LangGraph StateGraph 实现多 Agent fan-out/fan-in 编排；以 MCP v2 标准接入代码与企业文档工具；使用 qwen3.7-text-embedding + pgvector 构建企业 RAG；通过 Harness 在 Agent 输出后执行安全及质量门禁；通过 OpenTelemetry、Langfuse、Prometheus、Grafana 与 Sentry 建立 Agent Trace、Token、延迟、错误和质量评分体系。系统支持 Mock/Production 双模式，方便本地开发和生产环境渐进接入。
 这已经不是“会调 LLM API”的项目，而是一套小型 AI Engineering Platform。
 ---
 # 13. 生产部署时还要补什么？
