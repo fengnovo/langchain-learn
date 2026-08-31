@@ -5,3 +5,4 @@ dist
 settings.json
 .DS_Store
 dist.tar.gz
+_data
