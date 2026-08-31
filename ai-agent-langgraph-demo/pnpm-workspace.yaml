@@ -1,2 +1,4 @@
 allowBuilds:
   esbuild: true
+  # postinstall 只检查 protobufjs 版本约定，运行时不需要。
+  protobufjs: false
