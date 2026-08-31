@@ -1,0 +1,32 @@
+{
+  "name": "ai-agent-deepagent-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node src/index"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.24.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@11.24.0",
+  "type": "module",
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "@langchain/anthropic": "^1.5.8",
+    "@langchain/core": "^1.2.9",
+    "@types/node": "^26.4.0",
+    "deepagents": "^1.13.2",
+    "dotenv": "^17.4.2",
+    "typescript": "^7.0.2"
+  }
+}
