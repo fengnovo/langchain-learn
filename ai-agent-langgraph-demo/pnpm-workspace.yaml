@@ -1,4 +1,8 @@
 allowBuilds:
+  # demo7 读取文本/PDF 时不需要 canvas 的原生构建脚本。
+  canvas: false
   esbuild: true
   # postinstall 只检查 protobufjs 版本约定，运行时不需要。
   protobufjs: false
+  # 本示例不使用 CodeSplitter，tree-sitter 的原生构建脚本无需执行。
+  tree-sitter: false
