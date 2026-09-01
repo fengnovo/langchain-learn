@@ -1,5 +1,5 @@
 // 必须是第一个 import：先注册 OpenTelemetry，再加载 LangChain/LangGraph。
-import { shutdownLangfuse } from './instrumentation.js';
+import { langfuseTracing, shutdownLangfuse } from './instrumentation.js';
 
 import { tool } from '@langchain/core/tools';
 import {
@@ -9,7 +9,6 @@ import {
   StateGraph,
 } from '@langchain/langgraph';
 import { ToolNode, toolsCondition } from '@langchain/langgraph/prebuilt';
-import { CallbackHandler } from '@langfuse/langchain';
 import { z } from 'zod';
 import { model } from '../model.js';
 
@@ -89,22 +88,21 @@ async function main(): Promise<void> {
   const sessionId =
     process.env.LANGFUSE_DEMO_SESSION_ID?.trim() || 'demo-session-001';
 
-  const langfuseHandler = new CallbackHandler();
-  const result = await graph.invoke(
+  const { output: result, traceId } = await langfuseTracing.invoke(
+    graph,
     { messages: [{ role: 'user', content: prompt }] },
     {
-      callbacks: [langfuseHandler],
-      runName: 'demo6-langgraph-agent',
+      traceName: 'demo6-langgraph-agent',
+      userId,
+      sessionId,
       tags: ['demo6', 'langgraph', 'langfuse'],
       metadata: {
-        langfuseUserId: userId,
-        langfuseSessionId: sessionId,
         example: 'calculator-agent',
       },
-      configurable: {
-        thread_id: sessionId,
+      config: {
+        recursionLimit: 10,
       },
-      recursionLimit: 10,
+      flushAfterInvoke: true,
     },
   );
 
@@ -113,9 +111,7 @@ async function main(): Promise<void> {
   console.log(
     `回答：${lastMessage?.text || String(lastMessage?.content ?? '')}`,
   );
-  console.log(
-    `Langfuse trace ID：${langfuseHandler.last_trace_id ?? '未获取到'}`,
-  );
+  console.log(`Langfuse trace ID：${traceId ?? '未获取到'}`);
   console.log(
     `Langfuse 地址：${process.env.LANGFUSE_BASE_URL || 'https://cloud.langfuse.com'}`,
   );

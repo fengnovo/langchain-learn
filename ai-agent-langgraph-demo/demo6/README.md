@@ -53,3 +53,100 @@ pnpm demo6 "请用 calculator 计算 144 除以 12"
 - CLI 退出前调用 `shutdownLangfuse()`，确保尚未发送的 trace 完整落库。
 
 排查 trace 未出现时，可临时在 `.env` 设置 `LANGFUSE_DEBUG=true` 查看 SDK 调试日志。
+
+## 4. 接入 Deep Agents 项目
+
+把下面两个文件复制到目标项目：
+
+- `deepagents-langfuse.ts`：通用适配器，不依赖 Deep Agents 的具体类型。
+- `deepagents-instrumentation.ts`：通用初始化模板；复制后可改名为 `instrumentation.ts`。
+
+安装依赖：
+
+```bash
+pnpm add deepagents @langfuse/langchain @langfuse/otel \
+  @opentelemetry/sdk-node @langchain/core dotenv
+```
+
+目标项目的入口文件中，确保 `instrumentation` 是第一个 import：
+
+```ts
+import { langfuseTracing } from './deepagents-instrumentation.js';
+
+import { createDeepAgent } from 'deepagents';
+
+const agent = createDeepAgent({
+  model,
+  tools,
+  systemPrompt: '你是一个可以规划和调用工具的助手。',
+});
+
+const { output, traceId } = await langfuseTracing.invoke(
+  agent,
+  {
+    messages: [{ role: 'user', content: '分析这个问题并给出计划' }],
+  },
+  {
+    traceName: 'my-deep-agent',
+    userId: 'user-001',
+    sessionId: 'session-001',
+    tags: ['deepagents', 'production'],
+    metadata: { tenant: 'demo' },
+    config: {
+      recursionLimit: 50,
+      // 这里也可以放项目原有 callbacks/configurable，适配器会进行合并。
+    },
+  },
+);
+
+console.log(output);
+console.log(traceId);
+```
+
+第三个参数并不全是 Langfuse 原生配置，适配器把它分成三类处理：
+
+| 字段 | 属于 | 作用 |
+| --- | --- | --- |
+| `traceName` | Langfuse | 根 trace 的显示名称，映射为 LangChain `runName` |
+| `userId` | Langfuse | 按用户聚合和筛选 trace |
+| `sessionId` | Langfuse + LangGraph | Langfuse 会话 ID；未指定 `threadId` 时也作为 `thread_id` |
+| `threadId` | LangGraph | checkpointer 使用的线程 ID，可与 Langfuse session 分开 |
+| `tags` | Langfuse/LangChain | 标签，并向子调用传播 |
+| `version` | Langfuse | Agent 或 Prompt 的版本标识 |
+| `metadata` | Langfuse/LangChain | 自定义 JSON 元数据，并向子调用传播 |
+| `config` | LangGraph/LangChain | 原始 `RunnableConfig`，例如 `recursionLimit`、原有 callbacks |
+| `flushAfterInvoke` | 适配器 | 调用结束后立即发送 trace；适合 CLI/Serverless |
+
+因此下面这段不是 Langfuse 配置：
+
+```ts
+config: {
+  recursionLimit: 10,
+}
+```
+
+它表示 LangGraph 最多允许执行 10 个递归/循环步骤，防止 Agent 无限调用工具。
+`flushAfterInvoke: true` 也不会成为 trace 字段，它只是让适配器在返回结果前调用
+`forceFlush()`，确保短生命周期进程退出前数据已经发出。
+
+进程类型对应的收尾方式：
+
+```ts
+// CLI：执行完关闭
+await langfuseTracing.shutdown();
+
+// Serverless：每次 invoke 设置 flushAfterInvoke: true
+
+// Express/Fastify 等长驻服务：正常请求不 flush；收到停机信号时调用一次
+process.once('SIGTERM', async () => {
+  await langfuseTracing.shutdown();
+  process.exit(0);
+});
+```
+
+适配器的 `invoke()` 只依赖对象具有 LangChain 风格的 `invoke(input, config)`，
+所以同样可以包裹 `createDeepAgent()`、CompiledStateGraph 或普通 Runnable。
+
+如果目标项目已经注册了自己的 OpenTelemetry `NodeSDK`，不要再次调用
+`initLangfuseTracing()`；应直接把 `LangfuseSpanProcessor` 加入已有 NodeSDK，
+避免重复注册全局 provider。
