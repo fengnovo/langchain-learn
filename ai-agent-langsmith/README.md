@@ -60,3 +60,9 @@ ai-agent-langsmith
 - 每次运行都会生成一条新 trace；重复运行多次可对比不同模型 / 不同 prompt 的效果。
 - 若没有 LangSmith 账号，也可把 `LANGSMITH_TRACING` 置为 `false`，此时本项目仅作为一个普通的 DeepAgent 调用示例。
 - 想追踪多轮 / 带自定义工具的 Agent，参考同一组目录下的 `ai-agent-deepagent-demo`。
+
+
+![图片0](./pics/0.png)
+![图片1](./pics/1.png)
+![图片2](./pics/2.png)
+![图片3](./pics/3.png)
