@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx src/index.ts",
-    "demo5": "tsx demo5/demo.ts",
-    "typecheck:demo5": "tsc -p demo5/tsconfig.json",
-    "demo6": "tsx demo6/index.ts",
-    "typecheck:demo6": "tsc -p demo6/tsconfig.json",
+    "demo5": "tsx demo5-langchain-base/demo.ts",
+    "typecheck:demo5": "tsc -p demo5-langchain-base/tsconfig.json",
+    "demo6": "tsx demo6-deepagents-langfuse/index.ts",
+    "typecheck:demo6": "tsc -p demo6-deepagents-langfuse/tsconfig.json",
     "demo7": "tsx demo7-LlamaIndex/index.ts",
     "typecheck:demo7": "tsc -p demo7-LlamaIndex/tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
