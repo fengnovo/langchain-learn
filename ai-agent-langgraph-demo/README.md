@@ -104,7 +104,7 @@ demo1–4 在 `package.json` 中没有对应 script，请用 `npx tsx <入口>` 
 ```dotenv
 OPENAI_API_KEY=你的密钥
 OPENAI_BASE_URL=https://你的兼容接口/v1    # 直连 OpenAI 时可不填
-MODEL=qwen3.8-flash                         # 填实际模型 ID
+MODEL=qwen3.8-max-0902                         # 填实际模型 ID
 ```
 
 不同目录的补充变量：

@@ -36,7 +36,7 @@
      },
      "finish_reason": "tool_calls",
      "model_provider": "openai",
-     "model_name": "qwen3.8-flash",
+     "model_name": "qwen3.8-max-0902",
      "usage": {
       "prompt_tokens": 343,
       "total_tokens": 435,
@@ -110,7 +110,7 @@
      },
      "finish_reason": "stop",
      "model_provider": "openai",
-     "model_name": "qwen3.8-flash",
+     "model_name": "qwen3.8-max-0902",
      "usage": {
       "prompt_tokens": 404,
       "total_tokens": 485,
@@ -177,7 +177,7 @@
      },
      "finish_reason": "tool_calls",
      "model_provider": "openai",
-     "model_name": "qwen3.8-flash",
+     "model_name": "qwen3.8-max-0902",
      "usage": {
       "prompt_tokens": 437,
       "total_tokens": 507,
@@ -251,7 +251,7 @@
      },
      "finish_reason": "stop",
      "model_provider": "openai",
-     "model_name": "qwen3.8-flash",
+     "model_name": "qwen3.8-max-0902",
      "usage": {
       "prompt_tokens": 499,
       "total_tokens": 714,
@@ -307,7 +307,7 @@
      },
      "finish_reason": "stop",
      "model_provider": "openai",
-     "model_name": "qwen3.8-flash",
+     "model_name": "qwen3.8-max-0902",
      "usage": {
       "prompt_tokens": 529,
       "total_tokens": 875,

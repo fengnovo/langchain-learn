@@ -129,7 +129,8 @@ MOCK_MODE=false
 ```env
 LLM_API_KEY=...
 LLM_BASE_URL=...
-LLM_MODEL=qwen3.8-flashEMBEDDING_BASE_URL=http://localhost:11434/v1
+LLM_MODEL=qwen3.8-max-0902
+EMBEDDING_BASE_URL=http://localhost:11434/v1
 EMBEDDING_API_KEY=ollama
 EMBEDDING_MODEL=qwen3.7-text-embedding
 DATABASE_URL=postgresql://ai_native:ai_native@localhost:5432/ai_native

@@ -19,7 +19,7 @@ const trace: Trace = {
 function recordLLM() {
   trace.steps.push({
     type: 'llm',
-    model: 'qwen3.8-flash',
+    model: 'qwen3.8-max-0902',
     inputTokens: 1200,
     outputTokens: 300,
     latency: 2500,

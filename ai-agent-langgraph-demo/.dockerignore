@@ -1,0 +1,29 @@
+# 不把依赖与密钥打进镜像：依赖在容器内安装，密钥用 --env-file 运行时注入
+node_modules
+.env
+**/.env
+# 其他 demo 与演示产物不需要进入沙箱镜像
+demo
+src
+demo2
+demo3
+demo4-langgraph-fileCheckpointSaver
+demo5-langchain-base
+demo6-deepagents-langfuse
+demo7-LlamaIndex
+demo8-dynamic-model-agent
+demo9-dynamic-system-prompt
+demo10-structured-output
+demo11-message-types
+demo12-middleware
+demo13-deep-agents
+demo14-deepagents-subagents
+demo15-context-engineering
+demo16-langgraph-memory
+demo17-sandbox/workspace
+demo17-sandbox/workspace-cloud
+fs-root
+**/fs-root
+README.md
+Dockerfile
+.dockerignore

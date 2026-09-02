@@ -25,7 +25,7 @@
      },
      "finish_reason": "stop",
      "model_provider": "openai",
-     "model_name": "qwen3.8-flash",
+     "model_name": "qwen3.8-max-0902",
      "usage": {
       "prompt_tokens": 340,
       "total_tokens": 470,
@@ -81,7 +81,7 @@
      },
      "finish_reason": "stop",
      "model_provider": "openai",
-     "model_name": "qwen3.8-flash",
+     "model_name": "qwen3.8-max-0902",
      "usage": {
       "prompt_tokens": 381,
       "total_tokens": 594,
@@ -137,7 +137,7 @@
      },
      "finish_reason": "stop",
      "model_provider": "openai",
-     "model_name": "qwen3.8-flash",
+     "model_name": "qwen3.8-max-0902",
      "usage": {
       "prompt_tokens": 413,
       "total_tokens": 603,
