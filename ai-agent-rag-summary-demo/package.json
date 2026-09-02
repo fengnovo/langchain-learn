@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "rag:index": "tsx rag.ts",
+    "rag:index": "tsx src/rag.ts",
     "rag:client": "node src/rag-client.ts",
-    "summary": "tsx summary.ts",
+    "summary": "tsx src/summary.ts",
     "typecheck": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
