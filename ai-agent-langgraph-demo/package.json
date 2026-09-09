@@ -45,6 +45,8 @@
     "demo17:client": "tsx demo17-sandbox/client.ts",
     "demo17:2": "tsx demo17-sandbox/demo2.ts",
     "typecheck:demo17": "tsc -p demo17-sandbox/tsconfig.json",
+    "demo18": "tsx demo18-dangerous-command/code.ts",
+    "typecheck:demo18": "tsc -p demo18-dangerous-command/tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -59,6 +61,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.124.0",
     "@langchain/anthropic": "^1.5.9",
     "@langchain/core": "^1.2.9",
     "@langchain/langgraph": "^1.4.12",
