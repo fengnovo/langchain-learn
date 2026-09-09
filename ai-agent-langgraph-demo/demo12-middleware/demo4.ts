@@ -52,11 +52,11 @@ const selectorModel = await initChatModel(env('MODEL'), {
   modelProvider: 'openai',
   apiKey: env('OPENAI_API_KEY'),
   configuration: { baseURL: env('OPENAI_BASE_URL') },
-  temperature: 0,
-  maxTokens: 500,
+  temperature: 0, // 温度 0  轻量配置
+  maxTokens: 500, // 限制为小模型，避免 token 超出限制
   timeout: 30_000,
   maxRetries: 2,
-  modelKwargs: { enable_thinking: false },
+  modelKwargs: { enable_thinking: false }, // 关掉思考，用快/便宜的小模型
 });
 
 // ===== 工具池：模拟拥有大量工具的 Agent（课件场景一：10+ 工具）=====
@@ -167,12 +167,12 @@ const agent = createAgent({
   model,
   tools: toolPool,
   middleware: [
-    llmToolSelectorMiddleware({
-      model: selectorModel,
+    llmToolSelectorMiddleware({ // 实际干活的
+      model: selectorModel,//selectorModel 返回的是工具「名称」，但交给主模型的不是名称，而是过滤后的「工具对象子集」
       maxTools: 2,
       alwaysInclude: ['calculate'],
     }),
-    toolSelectionLogger,
+    toolSelectionLogger, // 看着 llmToolSelectorMiddleware 干活的，纯观察，不做任何筛选
   ],
 });
 

@@ -22,7 +22,6 @@ function requiredEnv(
 
 /**
  * demo10 专用模型：
- *
  * toolStrategy 生成结构化输出时会强制指定 tool_choice，而 qwen3.8 默认开启
  * 思考模式（thinking），思考模式下接口不接受 required/object 形式的
  * tool_choice（返回 400）。因此这里通过 modelKwargs 显式关闭思考模式。
@@ -38,5 +37,5 @@ export const model = await initChatModel(requiredEnv('MODEL'), {
   timeout: 30_000,
   maxRetries: 2,
   configurableFields: ['temperature', 'maxTokens'],
-  modelKwargs: { enable_thinking: false },
+  modelKwargs: { enable_thinking: false }, // 显式关闭思考模式
 });

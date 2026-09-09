@@ -51,6 +51,7 @@ pnpm demo12:2
 pnpm demo12:3
 pnpm demo12:4
 pnpm demo12:5
+pnpm demo12:6
 ```
 
 执行类型检查：
@@ -413,10 +414,145 @@ agent = create_agent(
    线程结束消失，而 /memories/密码.txt 依然可读——按路径自动分流，两种
    生命周期互不干扰（路由前缀对 Agent 透明，由复合后端自动剥离/还原）。
 
+### 四种后端的应用场景
+
+四个后端本质是「记忆该**存在哪、活多久、谁能看**」的四种选择。
+
+**1. StateBackend（默认）—— 单次任务的「草稿纸」**
+
+文件嵌在图状态中，仅在单次 `invoke` / 单个线程内有效，任务结束即丢弃（对应
+场景一：同一次调用内写入能读回，换一次新调用就找不到）。
+
+- **长任务的中间产物暂存**：处理长资料 / 多步骤任务时，检索片段、计算草稿、
+  待汇总要点等中间结果不全塞进对话上下文，先写成临时文件，需要时再 `read_file`
+  读特定行，用完即弃；
+- **避免上下文爆炸**：工具返回一大坨内容（网络搜索 / RAG 结果）会迅速填满
+  上下文窗口，先落草稿文件、按需读取即可缓解；
+- 类比：一次性便签纸 / 函数里的局部变量。
+
+**2. FilesystemBackend —— 操作真实（沙箱）磁盘**
+
+读写本机真实文件，进程重启后仍在；`rootDir` + `virtualMode: true` 把 Agent 的
+读写**锁死在指定目录**内（安全沙箱，防止乱碰系统文件）。
+
+- **编码 / 文件处理 Agent**：让 Agent 读、写、改某个工作目录里的真实代码或
+  文档（类似 IDE 内 agent 操作项目文件）；
+- **生成可交付产物**：报告、导出数据、配置文件等，需要 Agent 跑完后用户能
+  直接在磁盘上拿到（场景二验证了文件真实落盘在 `fs-root/密码.txt`）；
+- **批处理本地文件**：整理文件夹、转换格式等；
+- 类比：给 Agent 配一个受限的文件夹 / U 盘。
+
+**3. StoreBackend —— 跨线程、跨 Agent 的「长期记忆库」**
+
+存在 LangGraph `Store` 对象中（demo 用 `InMemoryStore`，生产可换 Redis /
+Postgres 等持久化后端）；生命周期跟 store 走、不跟线程走，不同 Agent / 不同次
+会话只要连同一个 store 即可共享读写（场景三：agent1 写、agent2 读）。
+
+- **跨会话长期记忆**：记住用户偏好、长期事实、历史结论——今天存进去，明天
+  新开对话仍能读回；
+- **多 Agent 共享知识 / 黑板**：几个专职 Agent（调研、写作、审核）通过同一
+  store 交换沉淀信息，而不必共享对话历史；
+- **需要多次执行的指令型 / 记忆型 Agent**；
+- 注意：demo 的 `InMemoryStore` 进程退出即丢失，真要长期持久化需接数据库后端
+  的 store；且两个 Agent 之间**只共享 store（文件记忆），消息 / 对话历史各自
+  独立**；
+- 类比：团队共用的网盘 / 数据库 / 长期笔记本。
+
+**4. CompositeBackend —— 一次装配，按路径自动分流**
+
+组合多个后端，按文件路径前缀路由（场景四：默认走 `StateBackend`，`/memories/`
+前缀走 `StoreBackend`）；前缀对 Agent 透明，它只管写 `/memories/x` 还是 `x`，
+中间件自动决定存哪。
+
+- **同一 Agent 同时需要「临时工作区」和「长期记忆」**：处理任务的中间草稿放
+  临时态（省空间、自动清理），值得长期保留的结论 / 用户信息写到 `/memories/`
+  持久化（场景四新调用后 草稿.txt 消失、/memories/密码.txt 仍在）；
+- **混合信息源任务**：一部分文件落本地磁盘、一部分进跨会话记忆库，用前缀路由
+  一次搞定，不用挂两套工具；
+- 类比：电脑里同时有「内存（临时）+ 硬盘（持久）+ 外接网盘（共享）」，系统按
+  路径自动决定写到哪。
+
 ### 后端选型建议
 
-- 临时草稿 / 单任务内的中间产物 → `StateBackend`（默认）；
-- 需要真实操作本地文件（且限制在某个目录内）→ `FilesystemBackend` + `virtualMode`；
-- 长期记忆 / 多次任务间共享知识 → `StoreBackend` + 持久化 Store；
-- 同时需要多种存储形式（如临时草稿 + 长期记忆共存）→ `CompositeBackend`
-  按路径前缀组合装配。
+选型时回答三个问题即可：
+
+1. **这信息任务结束后还要不要？** 不要 → `StateBackend`；要 → 往下；
+2. **要不要落到真实磁盘给人用？** 要 → `FilesystemBackend` + `virtualMode`；
+3. **要不要跨会话 / 跨 Agent 共享？** 要 → `StoreBackend` + 持久化 Store；
+   多种需求并存（临时草稿 + 长期记忆 / 本地文件）→ `CompositeBackend`
+   按路径前缀组合装配。
+
+速查：
+
+| 后端 | 存哪 | 活多久 | 谁能访问 | 典型用途 |
+| --- | --- | --- | --- | --- |
+| `StateBackend` | 图状态内 | 单次调用 / 线程结束即弃 | 仅当前线程 | 任务中间草稿、防止上下文爆窗 |
+| `FilesystemBackend` | 本地真实磁盘 | 持久（重启仍在） | 能访问该目录者 | 代码 / 文件编辑、生成可交付产物（沙箱隔离） |
+| `StoreBackend` | LangGraph Store（可接 DB） | 跟 store 生命周期，跨线程持久 | 连同一 store 的所有 Agent | 跨会话长期记忆、多 Agent 共享知识 |
+| `CompositeBackend` | 按前缀路由到上述多个 | 各后端各自决定 | 同上 | 一个 Agent 同时要临时草稿 + 长期记忆 / 本地文件 |
+
+## 10. demo6：会话持久化到 PostgreSQL（PostgresSaver 检查点）
+
+### 概念
+
+demo2 / demo16 使用的 `MemorySaver` 把检查点保存在**进程内存**中——进程一
+重启，所有线程的对话历史都会丢失。生产环境需要把「检查点（checkpoint）」
+落到外部数据库。LangGraph.js 提供
+`@langchain/langgraph-checkpoint-postgres` 的 **`PostgresSaver`**，把图在
+每个超步（super-step）的状态（`messages` 等）写入 PostgreSQL，从而：
+
+- 进程重启 / 换一台机器后，凭同一个 `thread_id` 即可恢复整段对话；
+- 多个应用实例共享同一个数据库做会话持久化；
+- 天然保留检查点历史（time travel / 回溯的基础）。
+
+它属于**短期记忆（checkpointer）**：按 `thread_id` 隔离的完整图状态 / 对话
+历史，由框架在每个超步自动读写。注意与 demo5 的 **StoreBackend（长期记忆）**
+区分——后者是跨线程、由 Agent 通过文件工具主动存取的知识。
+
+### 前置配置
+
+在项目根目录 `.env` 中配置 PostgreSQL 连接串：
+
+```dotenv
+DATABASE_URL=postgresql://user:password@localhost:5432/langgraph
+```
+
+本地可用 docker 快速起一个：
+
+```bash
+docker run --name lg-pg -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=langgraph \
+  -p 5432:5432 -d postgres:16
+# 对应连接串：postgresql://postgres:postgres@localhost:5432/langgraph
+```
+
+依赖：`@langchain/langgraph-checkpoint-postgres`（内部使用 `pg`）。
+
+### Python 与 TypeScript API 对照
+
+| 功能 | Python | TypeScript |
+| --- | --- | --- |
+| 导入 | `from langgraph.checkpoint.postgres import PostgresSaver` | `import { PostgresSaver } from '@langchain/langgraph-checkpoint-postgres'` |
+| 创建检查点 | `with PostgresSaver.from_conn_string(DB_URL) as cp:` | `const cp = PostgresSaver.fromConnString(process.env.DATABASE_URL!)`（同步返回） |
+| 首次建表 | `cp.setup()` | `await cp.setup()`（幂等，创建 `checkpoints` / `checkpoint_blobs` / `checkpoint_writes` 等表） |
+| 传入 Agent | `create_agent(..., checkpointer=cp)` | `createAgent({ model, checkpointer: cp })` |
+| 关闭连接池 | （with 自动退出） | `await cp.end()` |
+| 线程配置 | `config = {"configurable": {"thread_id": "1"}}` | `{ configurable: { thread_id: '1' } }` |
+| 遍历检查点历史 | `agent.get_state_history(config)` | `for await (const t of cp.list(config)) {...}` |
+
+### 运行观察
+
+`demo6.ts` 用「每轮都新建一个 `PostgresSaver` + Agent（独立连接池）」来模拟
+**程序重启 / 换新进程**，验证记忆确实来自数据库而非内存：
+
+1. **进程 A 写入**：告诉 Agent「我叫小明」，随后直接查询 PostgreSQL 的
+   `checkpoints` 表，确认该线程已落检查点行；
+2. **进程 B（模拟重启）读取**：用全新实例 + 全新连接池（内存中无任何历史），
+   凭同一 `thread_id` 再问「我叫什么名字？」——Agent 仍能答出「小明」，
+   证明对话状态是从 PostgreSQL 恢复的（这是 `MemorySaver` 做不到的）；
+3. **线程隔离**：换一个 `thread_id` 再问名字，读不到上一段对话；
+4. **检查点历史**：通过 `checkpointer.list(config)` 遍历该线程在库中的全部
+   检查点（含 `messages` 等 channel），这是 time travel / 状态回溯的基础。
+
+> 提示：`setup()` 只需在部署时执行一次（建表幂等，重复调用无害）；demo 里
+> 每次新建 saver 都调用是为了开箱即跑。生产中通常复用一个连接池 / saver
+> 实例，并在进程退出时 `end()` 关闭连接池。

@@ -91,8 +91,8 @@ const agent = createAgent({
   middleware: [
     summarizationMiddleware({
       model,
-      trigger: { messages: 5 },
-      keep: { messages: 3 },
+      trigger: { messages: 5 }, // 配置触发逻辑——消息数达到 5 条触发摘要；
+      keep: { messages: 3 }, // 摘要后保留最近 3 条消息；
     }),
   ],
 });
@@ -154,8 +154,8 @@ async function main(): Promise<void> {
     middleware: [
       summarizationMiddleware({
         model,
-        trigger: { tokens: 4000 },
-        keep: { tokens: 2000 },
+        trigger: { tokens: 4000 }, // 配置触发逻辑——token 数量达到 4000 触发摘要；
+        keep: { tokens: 2000 },// 摘要后保留最近 2000 个 token；
       }),
     ],
   });
@@ -167,8 +167,8 @@ async function main(): Promise<void> {
     middleware: [
       summarizationMiddleware({
         model,
-        trigger: { fraction: 0.8 },
-        keep: { fraction: 0.3 },
+        trigger: { fraction: 0.8 }, // 配置触发逻辑——模型上下文长度比值达到 0.8 触发摘要；
+        keep: { fraction: 0.3 },// 摘要后保留最近 0.3 模型上下文长度；
       }),
     ],
   });
@@ -191,8 +191,8 @@ async function main(): Promise<void> {
     middleware: [
       summarizationMiddleware({
         model,
-        trigger: [{ tokens: 5000 }, { messages: 3 }],
-        keep: { messages: 20 },
+        trigger: [{ tokens: 5000 }, { messages: 3 }],// 配置触发逻辑——token 数量达到 5000 或消息数达到 3 触发摘要；
+        keep: { messages: 20 },// 摘要后保留最近 20 条消息；
       }),
     ],
   });
@@ -206,8 +206,8 @@ async function main(): Promise<void> {
     middleware: [
       summarizationMiddleware({
         model,
-        trigger: { messages: 5 },
-        keep: { messages: 3 },
+        trigger: { messages: 5 }, // 配置触发逻辑——消息数达到 5 条触发摘要；
+        keep: { messages: 3 },// 摘要后保留最近 3 条消息；
         summaryPrompt: [
           '请将以下对话历史提炼为简洁的中文摘要，保留关键事实、数据与未完成的任务，按要点列出：',
           '',

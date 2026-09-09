@@ -9,7 +9,6 @@ import { model } from '../model.js';
  * 可以理解为系统的“记忆”，在工作流、Agent 或图中随着进程不断推进，
  * 记录并更新其内部信息。消息（SystemMessage/HumanMessage/...）的
  * Content 就是这些状态的直接来源。
- *
  * 本示例通过一次真实的工具调用往返，检查 AIMessage 与 ToolMessage携带的关键属性
  */
 
@@ -85,7 +84,7 @@ async function main(): Promise<void> {
   const aiMessage = await modelWithTools.invoke([new HumanMessage(question)]);
 
   console.log('================= Ai Message =================');
-  console.log(pretty(aiMessage));
+  console.log(pretty(aiMessage)); // 美观地打印输出
 
   // AIMessage 的关键属性：
   // - tool_calls：与该消息关联的工具调用；
@@ -98,6 +97,7 @@ async function main(): Promise<void> {
     'invalid_tool_calls:',
     JSON.stringify(aiMessage.invalid_tool_calls, null, 2),
   );
+  // 此次token用量信息
   console.log('usage_metadata:', JSON.stringify(aiMessage.usage_metadata));
   console.log(
     'content_blocks:',
@@ -127,7 +127,7 @@ async function main(): Promise<void> {
   }
 
   console.log('\n================= Tool Message =================');
-  for (const message of toolMessages) {
+  for (const message of toolMessages) { // 工具调用结果消息
     console.log(`[${message.type}] name=${message.name}`);
     console.log(`  tool_call_id: ${message.tool_call_id}`);
     console.log(`  status: ${message.status ?? '未设置'}`);

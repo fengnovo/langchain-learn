@@ -97,7 +97,8 @@ async function main(): Promise<void> {
   console.log('问：请调研 DeepAgents 的子代理机制并产出报告。\n');
 
   const result = await agent.invoke({
-    messages: [new HumanMessage('请调研 DeepAgents 的子代理机制并产出一份报告。')],
+    // messages: [new HumanMessage('请调研 DeepAgents 的子代理机制并产出一份报告。')],
+    messages: [new HumanMessage('你好，调研下美国经济')],
   });
 
   console.log(`task（子代理调用）次数：${countTaskCalls(result)}`);

@@ -20,9 +20,12 @@ import { model } from '../model.js';
  *    注意：同一位置有多个中间件时，按照列表中的先后顺序触发。
  *
  * 3. 分类：
- *    - 预制中间件（Built-in）：summarizationMiddleware（Summarization）、
- *      humanInTheLoopMiddleware（Human-in-the-loop）、todoListMiddleware（To-do list）、
- *      modelCallLimitMiddleware（Model call limit）等；
+ *    - 预制中间件（Built-in）：
+ *      • summarizationMiddleware（Summarization）——对话摘要：在消息过多时自动压缩历史对话，减少上下文长度；
+ *      • humanInTheLoopMiddleware（Human-in-the-loop）——人工确认：在工具调用或关键决策前暂停，等待用户审批后再继续；
+ *      • todoListMiddleware（To-do list）——任务清单：帮 Agent 自动维护和追踪待办事项列表，确保子任务不遗漏；
+ *      • modelCallLimitMiddleware（Model call limit）——调用限流：限制单次运行的模型调用次数，防止无限循环或资源浪费；
+ *      等；
  *    - 自定义中间件（Custom）：通过 createMiddleware 构建节点型钩子
  *      （beforeAgent / beforeModel / afterModel / afterAgent）与环绕型钩子
  *      （wrapModelCall / wrapToolCall）。
@@ -41,7 +44,7 @@ const getWeather = tool(
 );
 
 /**
- * 自定义中间件一：audit-trail
+ * 自定义中间件一：audit-trail (审计追踪)
  * 主要作用 1（行为记录）：通过日志记录、分析和调试跟踪 Agent 行为，
  * 覆盖全部六种钩子，完整还原课件图中的执行管道。
  */
@@ -61,6 +64,7 @@ const auditTrail = createMiddleware({
   // 环绕型钩子：进入/退出各记录一次
   wrapModelCall: async (request, handler) => {
     log('audit-trail', 'wrapModelCall 进入（环绕每次模型调用）');
+    // 这句必须写：环绕型钩子（wrapModelCall）需调用 handler(request) 放行请求到下一个处理器/实际模型，否则会中断执行管道
     const response = await handler(request);
     log('audit-trail', 'wrapModelCall 退出');
     return response;
@@ -121,7 +125,7 @@ const agent = createAgent({
   middleware: [
     auditTrail,
     callCounter,
-    modelCallLimitMiddleware({ runLimit: 10 }),
+    modelCallLimitMiddleware({ runLimit: 10 }), // 调用限流：限制单次运行的模型调用次数，防止无限循环或资源浪费；
   ],
 });
 

@@ -100,9 +100,9 @@ const agent = createAgent({
   middleware: [
     humanInTheLoopMiddleware({
       interruptOn: {
-        write_txt_tool: true,
-        delete_txt_tool: { allowedDecisions: ['approve', 'reject'] },
-        read_txt_tool: false,
+        write_txt_tool: true,//写文件拦截
+        delete_txt_tool: { allowedDecisions: ['approve', 'reject'] },//删文件拦截
+        read_txt_tool: false, //读文件不拦截
       },
       descriptionPrefix: '工具执行待批准',
     }),
@@ -238,6 +238,7 @@ async function resumeWithHumanDecision(
 
 // 终端交互：TTY 下逐问等待人工输入；非 TTY（如管道喂入决策）时在启动阶段
 // 预读全部标准输入行——否则模型调用等待期间 stdin 提前 EOF 会关闭 readline。
+// TTY = 真人坐在终端前实时交互；管道模式 = 输入被另一个程序/文件提前喂好，程序无人值守自动跑。 
 const usingPipedInput = !process.stdin.isTTY;
 const pipedLines = usingPipedInput ? readFileSync(0, 'utf-8').split('\n') : [];
 let pipedIndex = 0;
@@ -245,9 +246,11 @@ let pipedIndex = 0;
 const rl = createInterface({ input: stdin, output: stdout });
 
 async function ask(question: string): Promise<string> {
+  // process.stdin.isTTY === true → usingPipedInput = false → 走 rl.question(question)
   if (usingPipedInput) {
     const line = pipedLines[pipedIndex] ?? '';
     pipedIndex += 1;
+    console.log(`==ooo===${pipedIndex}==oooo==`); //不会走这里 
     console.log(`${question}${line}`);
     return line;
   }

@@ -41,6 +41,9 @@ import { model } from '../model.js';
  *    - StoreBackend：使 Agent 能够访问跨线程持久化的长期存储空间。以构建
  *      存储对象（InMemoryStore）的形式，使 Agent 的存储（记忆）能够脱离
  *      线程进行复用，非常适合需要多次执行的长期记忆或指令 Agent 任务。
+典型场景是——
+Agent A 这次会话帮你记下了"用户偏好/长期事实"，写进 store；
+改天 Agent B（甚至重启后的新 Agent 实例）只要连同一个 store，就能通过读文件拿回这些记忆。
  *      注意：StoreBackend 创建的文件与 Store 对象共享生命周期；
  *    - CompositeBackend（复合后端）：当希望为 Agent 提供多种存储（记忆）
  *      形式时，允许同时配置 StateBackend 和 StoreBackend——按路径前缀把
@@ -73,7 +76,7 @@ const stateAgent = createAgent({
 // =====================================================================
 // 可访问的根目录：demo12-middleware/fs-root（提前创建，保证目录存在）
 const fsRoot = fileURLToPath(new URL('./fs-root', import.meta.url));
-mkdirSync(fsRoot, { recursive: true });
+mkdirSync(fsRoot, { recursive: true }); // 确保目录存在
 
 // 演示 systemPrompt（自定义系统提示词）与 customToolDescriptions（重写工具描述）
 const fsAgent = createAgent({
@@ -81,8 +84,8 @@ const fsAgent = createAgent({
   tools: [],
   middleware: [
     createFilesystemMiddleware({
-      backend: new FilesystemBackend({ rootDir: fsRoot, virtualMode: true }),
-      systemPrompt: '当用户要求保存信息时，请把内容写入文件系统。',
+      backend: new FilesystemBackend({ rootDir: fsRoot, virtualMode: true }), // 限制访问 fsRoot 目录
+      systemPrompt: '当用户要求保存信息时，请把内容写入文件系统。',// 自定义系统提示词
       customToolDescriptions: {
         ls: '当需要列出目录中的文件时使用 ls 工具',
         read_file: '使用 read_file 工具读取文件中的内容',
@@ -112,6 +115,14 @@ const agentStore2 = createAgent({
   store, // 同一个 store 实例
   middleware: [createFilesystemMiddleware({ backend: new StoreBackend({ store }) })],
 });
+/* 上面agentStore1和agentStore2的运行上下文（thread/线程）、
+对话消息（messages / state）和Agent 实例本身都还是独立的，只是下面的硬盘存储的东西可以共享到
+agentStore1.invoke(写入 密码.txt = 我们是EgoAlpha)
+      ↓ write_file 把内容存进【共享 store】
+agentStore2.invoke(读取 密码.txt)
+      ↓ read_file 从【同一个共享 store】读到 → "我们是EgoAlpha"
+*/
+
 
 // =====================================================================
 // 场景四：CompositeBackend —— 复合后端，按路径前缀把操作路由到不同存储

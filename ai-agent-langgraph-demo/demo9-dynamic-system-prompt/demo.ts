@@ -99,6 +99,7 @@ async function main(): Promise<void> {
   console.log('===== user_role=expert =====');
   printReply(expert.messages);
 
+  // 这里写死代码做切换演示，实际应用中通常来自登录用户信息、路由参数或前端传入或者根据用户输入动态设置 context。
   const beginner = await agent.invoke(
     { messages: [new HumanMessage(question)] },
     { context: { userRole: 'beginner' } },

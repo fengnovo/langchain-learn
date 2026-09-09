@@ -25,6 +25,7 @@
     "demo12:3": "tsx demo12-middleware/demo3.ts",
     "demo12:4": "tsx demo12-middleware/demo4.ts",
     "demo12:5": "tsx demo12-middleware/demo5.ts",
+    "demo12:6": "tsx demo12-middleware/demo6.ts",
     "typecheck:demo12": "tsc -p demo12-middleware/tsconfig.json",
     "demo13": "tsx demo13-deep-agents/demo.ts",
     "demo13:2": "tsx demo13-deep-agents/demo2.ts",
@@ -68,6 +69,7 @@
     "@langchain/anthropic": "^1.5.9",
     "@langchain/core": "^1.2.9",
     "@langchain/langgraph": "^1.4.12",
+    "@langchain/langgraph-checkpoint-postgres": "^1.0.5",
     "@langchain/openai": "^1.5.10",
     "@langfuse/langchain": "^5.11.0",
     "@langfuse/otel": "^5.11.0",
@@ -80,11 +82,13 @@
     "express": "^5.2.1",
     "langchain": "^1.5.10",
     "llamaindex": "^0.12.1",
+    "pg": "^8.23.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.3.0",
+    "@types/pg": "^8.23.1",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2"
   }

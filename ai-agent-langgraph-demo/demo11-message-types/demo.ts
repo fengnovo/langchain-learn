@@ -18,8 +18,7 @@ import { model } from '../model.js';
  * - ToolMessage：对于支持工具调用的模型，AI 消息可以包含工具调用，
  *   工具消息用于将单个工具执行的结果传递回模型。工具可以生成
  *   ToolMessage 对象，用户也可以直接创建 ToolMessage。
- *
- * Python 从 langchain.messages 导入；TypeScript 从 @langchain/core/messages 导入。
+ *   TypeScript 从 @langchain/core/messages 导入。
  */
 const messages: BaseMessage[] = [
   new SystemMessage(
