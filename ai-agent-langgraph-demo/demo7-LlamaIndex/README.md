@@ -1,6 +1,6 @@
 # Demo 7：用 LlamaIndex 给 DeepAgent 增加本地知识库
 
-这个示例会读取 `your_documents/` 中的本地文件，用 LlamaIndex 建立内存向量索引，再把检索能力注册成 
+这个示例会读取 `documents/` 中的本地文件，用 LlamaIndex 建立内存向量索引，再把检索能力注册成 
 DeepAgent 的 `knowledge_base_search` 工具。用户提问后，Agent 会自行调用这个工具，并根据检索结果回答。
 
 运行流程：读取文件 → OpenAI Embedding 向量化 → LlamaIndex 检索 → DeepAgent 调用检索工具 → OpenAI 生成答案。
@@ -80,7 +80,7 @@ EMBEDDING_MODEL=qwen3.7-text-embedding-flash
 把资料放到：
 
 ```text
-demo7-LlamaIndex/your_documents/
+demo7-LlamaIndex/documents/
 ```
 
 仓库中已经提供了一个 `annual-leave.md` 示例。你可以替换或继续增加 `.txt`、`.md`、`.csv`、`.html`、`.pdf`、`.docx` 等文件。
@@ -91,7 +91,7 @@ demo7-LlamaIndex/your_documents/
 demo7-LlamaIndex/
 ├── index.ts
 ├── README.md
-└── your_documents/
+└── documents/
     ├── annual-leave.md
     └── employee-handbook.pdf
 ```
@@ -182,7 +182,7 @@ Settings.embedModel = new OpenAIEmbedding({
 第三方接口可能没有 Embedding 路由或不支持默认模型。查看服务商的模型列表，再把 `EMBEDDING_MODEL` 改成它实际支持的模型。
 聊天模型和 Embedding 模型是两类不同模型。
 
-### 找不到 `your_documents`
+### 找不到 `documents`
 
 确认目录名没有拼错，并且至少有一个受支持的文件。示例使用基于 `index.ts` 的绝对路径解析，所以无论从仓库根目录还是项目根目录启动，都能定位到同一个知识库目录。
 

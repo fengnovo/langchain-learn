@@ -47,6 +47,9 @@
     "typecheck:demo17": "tsc -p demo17-sandbox/tsconfig.json",
     "demo18": "tsx demo18-dangerous-command/code.ts",
     "typecheck:demo18": "tsc -p demo18-dangerous-command/tsconfig.json",
+    "demo19": "node --import tsx demo19-LlamaIndex-GraphRAG/index.ts",
+    "typecheck:demo19": "tsc -p demo19-LlamaIndex-GraphRAG/tsconfig.json",
+    "test:demo19": "node --import tsx --test demo19-LlamaIndex-GraphRAG/graph.test.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

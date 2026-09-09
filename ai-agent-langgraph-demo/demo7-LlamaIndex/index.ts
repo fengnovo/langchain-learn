@@ -10,8 +10,8 @@ import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
 
 const currentDirectory = dirname(fileURLToPath(import.meta.url));
-// ai-agent-langgraph-demo/demo7-LlamaIndex/your_documents /docs
-const documentsDirectory = join(currentDirectory, 'your_documents');
+// ai-agent-langgraph-demo/demo7-LlamaIndex/documents/docs
+const documentsDirectory = join(currentDirectory, 'documents');
 
 // 无论从哪个目录启动，都固定读取项目根目录的 .env。
 dotenv.config({
