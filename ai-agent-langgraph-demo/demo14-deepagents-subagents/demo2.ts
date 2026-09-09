@@ -6,8 +6,7 @@ import { z } from 'zod';
 import { model } from './model.js';
 
 /**
- * SubAgent 的自定义创建（CompiledSubAgent）与调用观察（对应 Python 课件两页内容）：
- *
+ * SubAgent 的自定义创建（CompiledSubAgent）与调用观察：
  * 1. 除了基本的字典形式创建之外，还可以通过 createAgent 函数，外部创建独立
  *    子代理后，通过 CompiledSubAgent 传入主代理中，以此实现更灵活、针对性
  *    配置的子代理功能——例如为子代理单独配置中间件、checkpointer、

@@ -6,8 +6,7 @@ import { z } from 'zod';
 import { model, selectorModel } from './model.js';
 
 /**
- * 上下文工程策略②：选择（Select）（对应 Python 课件四象限内容）：
- *
+ * 上下文工程策略②：选择（Select）：
  * 核心理念：在海量信息中精准定位最相关的内容，将最具价值信息加入上下文窗口。
  *
  * 在 DeepAgents / LangChain 中落地四个象限：

@@ -1,7 +1,6 @@
 # demo8：动态模型 Agent 创建（中间件 wrapModelCall）
 
 动态模型在运行时根据当前状态和上下文进行选择，这使得复杂的路由逻辑和成本优化成为可能。
-本示例是 Python 课件「动态模型 Agent 创建」的 TypeScript 版：
 
 - `createMiddleware` + `wrapModelCall`：包装每次模型调用，实现动态模型选择；
 - `createAgent`：创建带工具与中间件的 Agent，`model` 传默认模型；

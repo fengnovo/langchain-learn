@@ -63,7 +63,7 @@ export const model = await initChatModel(CONFIG[current].MODEL, {
   },
   temperature: 0.7,
   maxTokens: 1_000,
-  timeout: 30_000,
+  timeout: 120_000,
   maxRetries: 2,
   configurableFields: ['temperature', 'maxTokens'],
 });

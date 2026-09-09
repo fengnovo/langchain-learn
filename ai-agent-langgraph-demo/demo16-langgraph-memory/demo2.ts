@@ -7,8 +7,6 @@ import { model } from '../model.js';
 
 /**
  * LangGraph 记忆②：定制 Agent 的记忆状态 + 状态记忆的工具读取
- * （对应 Python 课件「定制 Agent 的记忆状态」「状态记忆的工具读取」两页）：
- *
  * 1. 定制记忆状态：记忆（或记忆中的对话信息）的根本意义是记录信息或数据。
  *    我们可以在 states 中定义额外字段进行独特信息的记录——用 zod 定义
  *    stateSchema（如 userName、gender），传入 checkpointer 后该状态随线程

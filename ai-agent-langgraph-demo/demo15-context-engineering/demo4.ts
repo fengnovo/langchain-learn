@@ -5,8 +5,7 @@ import { z } from 'zod';
 import { model } from './model.js';
 
 /**
- * 上下文工程策略④：隔离（Isolating）（对应 Python 课件内容）：
- *
+ * 上下文工程策略④：隔离（Isolating）：
  * 核心理念：将上下文拆分并分配，让职责与上下文内容相符；
  * 解决的是「信息交叉污染」和「目标漂移」问题。
  *

@@ -10,8 +10,7 @@ import { z } from 'zod';
 import { model } from '../model.js';
 
 /**
- * LLM tool_selector 中间件（对应 Python 课件四页内容）：
- *
+ * LLM tool_selector 中间件：
  * 1. 概念：在调用主模型前，利用大型语言模型智能筛选相关工具。该中间件通过
  *    结构化输出向 LLM 询问当前查询最相关的工具，结构化输出模式定义了可用
  *    工具的名称及描述。适用于以下场景：

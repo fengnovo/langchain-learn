@@ -7,8 +7,7 @@ import { z } from 'zod';
 import { model } from './model.js';
 
 /**
- * 上下文工程策略③：压缩（Compress）（对应 Python 课件内容）：
- *
+ * 上下文工程策略③：压缩（Compress）：
  * 核心理念：只保留后续任务所需上下文信息，减轻 token 压力；
  * 需要在「信息保留度」和「token 效率」之间找到最佳平衡点。
  *

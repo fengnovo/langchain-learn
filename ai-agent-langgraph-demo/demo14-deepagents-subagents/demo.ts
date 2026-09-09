@@ -5,8 +5,7 @@ import { z } from 'zod';
 import { model } from './model.js';
 
 /**
- * SubAgent 的概念与 Dictionary-based 基本创建（对应 Python 课件四页内容）：
- *
+ * SubAgent 的概念与 Dictionary-based 基本创建：
  * 1. 概念与逻辑：为子代理来委派工作——在子代理参数中指定子代理的责任与工具。
  *    子代理可以实现上下文隔离，保持主代理上下文的干净；同时子代理也可以更
  *    专注于某一方面任务执行，以提升子任务执行效率与成功率。典型分工（见

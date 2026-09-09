@@ -5,7 +5,7 @@ import { createAgent, createMiddleware } from 'langchain';
 import { z } from 'zod';
 import { model } from '../model.js';
 
-// 简单的计算器工具（对应 Python 示例里的 tools）。
+// 简单的计算器工具。
 const calculator = tool(
   ({ a, b, operation }) => {
     switch (operation) {
@@ -36,16 +36,16 @@ const calculator = tool(
 );
 
 /**
- * 定义上下文 Schema（对应 Python 的 class Context(TypedDict)）：
+ * 定义上下文 Schema:
  * context 在每次调用时传入，不会像 state 那样被持久化；
- * default('user') 对应 Python 的 .get("user_role", "user")。
+ * default('user')。
  */
 const contextSchema = z.object({
   userRole: z.enum(['expert', 'beginner', 'user']).default('user'),
 });
 
 /**
- * 动态系统提示词（对应 Python 的 @dynamic_prompt）：
+ * 动态系统提示词：
  * LangChain.js v1 没有 dynamic_prompt 装饰器，等价写法是在 wrapModelCall
  * 中间件里根据 runtime.context 生成 systemPrompt，再交给 handler 执行。
  */

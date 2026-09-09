@@ -4,7 +4,7 @@
 system_prompt」的 TypeScript 版：根据调用时传入的 `context`（用户角色）动态生成
 系统提示词。
 
-- `contextSchema`：定义上下文结构（对应 Python 的 `class Context(TypedDict)`）；
+- `contextSchema`：定义上下文结构；
 - `wrapModelCall` 中间件：LangChain.js v1 没有 `dynamic_prompt` 装饰器，等价写法是
   在中间件里覆盖 `systemPrompt` 后再调用 `handler`；
 - `invoke(input, { context })`：每次调用时明确指定上下文。

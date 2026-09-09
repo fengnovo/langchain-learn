@@ -14,8 +14,7 @@ import { z } from 'zod';
 import { model } from '../model.js';
 
 /**
- * Human-in-the-Loop（HITL，人工监督）中间件（对应 Python 课件四页内容）：
- *
+ * Human-in-the-Loop（HITL，人工监督）中间件：
  * 1. 概念：HITL 允许用户为代理工具调用添加人工监督。当模型提出可能需要
  *    审查的动作（如写入文件、执行 SQL）时，中间件会暂停执行并等待人类决策。
  *    三种人类响应中断的方式：

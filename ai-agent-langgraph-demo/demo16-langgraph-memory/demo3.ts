@@ -15,8 +15,7 @@ function langgraphStore(runtime: ToolRuntime): InMemoryStore | null {
 }
 
 /**
- * LangGraph 记忆③：长期记忆（long-term memory）（对应 Python 课件内容）：
- *
+ * LangGraph 记忆③：长期记忆（long-term memory）：
  * LangChain 将长期记忆以 JSON 文档的形式存储在 store 对象中。store 中的每个
  * 记忆都组织在自定义命名空间（namespace）和独立键（key）下。命名空间通常包含
  * 用户或组织 ID 或其他标签，便于信息组织——类似文件夹路径：

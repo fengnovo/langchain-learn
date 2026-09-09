@@ -4,8 +4,7 @@ import { StoreBackend, createDeepAgent } from 'deepagents';
 import { model } from './model.js';
 
 /**
- * 上下文工程策略①：写入（Write）（对应 Python 课件内容）：
- *
+ * 上下文工程策略①：写入（Write）：
  * 核心理念：突破上下文窗口限制，将信息持久化到外部存储系统，实现
  * 「工作记忆」向「长期记忆」的转移。
  *

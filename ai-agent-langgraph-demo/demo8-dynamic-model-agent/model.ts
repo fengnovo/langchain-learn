@@ -27,7 +27,7 @@ function optionalEnv(
 }
 
 /**
- * 定义两个备选模型（对应 Python 示例中的 init_chat_model）：
+ * 定义两个备选模型：
  *
  * - basicModel：默认模型，快且便宜，相当于示例里的 openai:gpt-4o-mini；
  * - advancedModel：能力更强但更贵的模型，相当于示例里的 openai:gpt-4o。

@@ -3,12 +3,9 @@
 在某些情况下，我们可能希望 Agent 以特定格式来返回输出。本示例是 Python 课件
 「结构化输出 Structured output」的 TypeScript 版：
 
-- `responseFormat`：LangChain.js 通过 `createAgent` 的 `responseFormat` 参数配置
-  结构化输出（对应 Python 的 `response_format`）；
-- `toolStrategy`：使用人工工具调用来生成结构化输出，适用于任何支持工具调用的模型
-  （对应 Python 的 `ToolStrategy`）；
-- `structuredResponse`：结构化结果放在返回状态的 `structuredResponse` 字段
-  （对应 Python 的 `result["structured_response"]`）。
+- `responseFormat`：LangChain.js 通过 `createAgent` 的 `responseFormat` 参数配置；
+- `toolStrategy`：使用人工工具调用来生成结构化输出，适用于任何支持工具调用的模型；
+- `structuredResponse`：结构化结果放在返回状态的 `structuredResponse` 字段。
 
 ## 1. 环境变量
 

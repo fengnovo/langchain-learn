@@ -13,8 +13,7 @@ import { createAgent } from 'langchain';
 import { model } from '../model.js';
 
 /**
- * File System（文件系统）中间件（对应 Python 课件五页内容）：
- *
+ * File System（文件系统）中间件：
  * 1. 概念：上下文（Context）的管理是构建高效 Agent 的关键所在。当使用的工具
  *    调用内部信息不稳定（如网络搜索或 RAG）时，这一挑战尤为严峻，因为冗长的
  *    工具信息会迅速填满上下文窗口。这时可以选择将一些关键信息以「文件」方式
@@ -117,9 +116,7 @@ const agentStore2 = createAgent({
 // =====================================================================
 // 场景四：CompositeBackend —— 复合后端，按路径前缀把操作路由到不同存储
 // =====================================================================
-// TS 版构造函数为位置参数：new CompositeBackend(默认后端, 路由表)
-// （对应 Python 课件 backend=lambda runtime: CompositeBackend(
-//     default=StateBackend(runtime), routes={".": StoreBackend(runtime)})；
+// 构造函数为位置参数：new CompositeBackend(默认后端, 路由表)
 //   TS 版后端均为直接构造的实例，无需 runtime 工厂。课件用 "." 全路由，
 //   这里按典型用法演示：默认走 StateBackend，/memories/ 前缀走 StoreBackend）
 const compositeStore = new InMemoryStore();

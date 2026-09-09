@@ -7,8 +7,7 @@ import { z } from 'zod';
 import { model } from './model.js';
 
 /**
- * DeepAgents 的创建与内部细节（对应 Python 课件四页内容）：
- *
+ * DeepAgents 的创建与内部细节：
  * 1. 核心能力：为了让 Agent 能够更深入探讨话题，需要 Agent 能够规划更复杂的
  *    任务，并在更长时间范围内逐步完成各个目标最终完成整体任务。DeepAgent
  *    的核心在于合理运用四个基本概念：详尽的提示词、规划工具、子代理

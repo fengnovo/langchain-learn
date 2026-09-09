@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { model } from '../model.js';
 
 /**
- * 中间件（Middleware）三要素（对应 Python 课件三页内容）：
+ * 中间件（Middleware）三要素：
  *
  * 1. 概念：中间件是 Agent 执行管道中的拦截器，在关键执行节点暴露钩子（hooks），
  *    开发者可注入自定义业务逻辑，实现对代理行为的细粒度控制和功能扩展。
@@ -110,8 +110,7 @@ const callCounter = createMiddleware({
 
 /**
  * 创建 Agent：middleware 参数传入一个列表，可以传多个中间件——
- * 两个自定义中间件 + 一个预制中间件（Built-in：Model call limit，
- * 对应 Python 课件的 ModelCallLimitMiddleware）。
+ * 两个自定义中间件 + 一个预制中间件（Built-in：Model call limit
  *
  * Python 课件写法：middleware=[SummarizationMiddleware(...), HumanInTheLoopMiddleware(...)]
  * JS 版还提供 summarizationMiddleware / humanInTheLoopMiddleware / todoListMiddleware。

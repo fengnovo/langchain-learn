@@ -6,8 +6,7 @@ import { z } from 'zod';
 import { model } from '../model.js';
 
 /**
- * Summarization 中间件（对应 Python 课件四页内容）：
- *
+ * Summarization 中间件：
  * 1. 概念：在接近令牌限制或其他条件时，自动总结对话记录，保留近期消息的
  *    同时压缩较早的上下文，为 Agent 在更复杂的长时序环境中的任务执行提供
  *    便利。摘要功能适用于以下场景：

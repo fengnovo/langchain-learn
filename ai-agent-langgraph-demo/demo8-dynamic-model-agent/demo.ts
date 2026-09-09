@@ -5,7 +5,7 @@ import { createAgent, createMiddleware } from 'langchain';
 import { z } from 'zod';
 import { advancedModel, basicModel } from './model.js';
 
-// 简单的计算器工具，让 Agent 具备真实的工具调用能力（对应 Python 示例里的 tools）。
+// 简单的计算器工具，让 Agent 具备真实的工具调用能力。
 const calculator = tool(
   ({ a, b, operation }) => {
     switch (operation) {
@@ -36,13 +36,11 @@ const calculator = tool(
 );
 
 /**
- * 利用中间件定义动态模型 Agent（对应 Python 示例的 @wrap_model_call）：
+ * 利用中间件定义动态模型 Agent：
  *
  * - wrapModelCall 在每次请求模型前执行，可以改写请求后再交给 handler；
- * - request.messages 是本次要发送的完整消息列表（等价于 Python 的
- *   request.state["messages"]）；
- * - 用 handler({ ...request, model }) 替换模型后继续执行，
- *   等价于 Python 的 request.model = model; return handler(request)。
+ * - request.messages 是本次要发送的完整消息列表
+ * - 用 handler({ ...request, model }) 替换模型后继续执行
  */
 const dynamicModelSelection = createMiddleware({
   name: 'dynamicModelSelection',
@@ -61,7 +59,7 @@ const dynamicModelSelection = createMiddleware({
   },
 });
 
-// 创建 Agent：model 传默认模型，等价于 Python 示例的 model=basic_model。
+// 创建 Agent：model 传默认模型。
 const agent = createAgent({
   model: basicModel,
   tools: [calculator],

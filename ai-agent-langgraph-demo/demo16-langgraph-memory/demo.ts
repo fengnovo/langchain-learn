@@ -7,8 +7,7 @@ import { z } from 'zod';
 import { model } from '../model.js';
 
 /**
- * LangGraph 记忆①：短期记忆（short-term memory）（对应 Python 课件内容）：
- *
+ * LangGraph 记忆①：短期记忆（short-term memory）：
  * 记忆是维持历史交互信息的系统。用户交互记录（Agent state：human message /
  * AI message / tool message ...）是最常见的记忆形式。
  *

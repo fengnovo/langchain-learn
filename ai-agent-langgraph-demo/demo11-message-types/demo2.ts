@@ -10,9 +10,7 @@ import { model } from '../model.js';
  * 记录并更新其内部信息。消息（SystemMessage/HumanMessage/...）的
  * Content 就是这些状态的直接来源。
  *
- * 本示例通过一次真实的工具调用往返，检查 AIMessage 与 ToolMessage
- * 携带的关键属性（对应 Python 课件「AIMessage / ToolMessage 的
- * additional_kwargs」部分）。
+ * 本示例通过一次真实的工具调用往返，检查 AIMessage 与 ToolMessage携带的关键属性
  */
 
 // 两个工具：calculate 真实计算；internet_search 返回模拟搜索结果。
@@ -51,7 +49,7 @@ const internetSearch = tool(
 
 const tools = [calculate, internetSearch];
 
-/** 按名称执行工具，返回工具结果文本（对应 Python 课件里的 coerce_args：参数由 zod schema 自动校验/转换）。 */
+/** 按名称执行工具，返回工具结果文本*/
 async function executeTool(name: string, args: unknown): Promise<string> {
   switch (name) {
     case 'calculate':
@@ -64,8 +62,7 @@ async function executeTool(name: string, args: unknown): Promise<string> {
 }
 
 /**
- * 对应 Python 的 pretty_repr()：返回消息更易读的可视化呈现形式。
- * LangChain.js 没有内置等价方法，通常像这样自行格式化。
+ * 返回消息更易读的可视化呈现形式。LangChain.js 没有内置等价方法，通常像这样自行格式化。
  */
 function pretty(message: BaseMessage): string {
   const lines = [`[${message.type}] ${message.text || '(无文本内容)'}`];
@@ -95,7 +92,6 @@ async function main(): Promise<void> {
   // - invalid_tool_calls：与该消息关联的解析错误的工具调用；
   // - usage_metadata：该消息的使用元数据，例如 token 使用情况；
   // - contentBlocks：消息中标准的、结构化的 ContentBlock 列表
-  //   （对应 Python 的 content_blocks）。
   console.log('\n--- AIMessage 的属性 ---');
   console.log('tool_calls:', JSON.stringify(aiMessage.tool_calls, null, 2));
   console.log(

@@ -8,8 +8,7 @@ import {
 import { model } from '../model.js';
 
 /**
- * 消息的分类（对应 Python 示例的 messages 列表）：
- *
+ * 消息的分类
  * - SystemMessage：一组初始指令，用于引导模型的行为——设置基调、
  *   定义模型的角色并建立响应指南；
  * - HumanMessage：表示用户输入和交互，可以包含文本、图像、音频、
@@ -47,8 +46,7 @@ console.log('===== 消息的分类 =====');
 printMessages(messages);
 
 /**
- * Tool Message（对应 Python 示例的 ai_message / tool_message）：
- *
+ * Tool Message
  * - 对于支持工具调用的模型，AI 消息可以通过 tool_calls 发起工具调用；
  * - 工具消息用于将单个工具执行的结果传递回模型，
  *   tool_call_id 必须与对应工具调用的 id 一一配对。
