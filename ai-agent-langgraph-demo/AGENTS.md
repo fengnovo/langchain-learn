@@ -6,6 +6,3 @@
 - 如果使用 CommonJS（`require` / `module.exports`），必须使用 `.cjs` 扩展名。
 - 对应的测试文件也应使用 `.cjs` 扩展名以保持一致。
 
-## 用户偏好
-
-- 用户名字：小明

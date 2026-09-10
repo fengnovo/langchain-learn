@@ -1,7 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import readline from 'node:readline/promises';
 
 import { AIMessage, HumanMessage, ToolMessage } from '@langchain/core/messages';
 import { Command } from '@langchain/langgraph';
@@ -22,15 +21,21 @@ import { model } from './model.js';
 import {
   A,
   askApproval,
+  askReplInput,
   pickSession,
-  render,
+  startTui,
+  stopTui,
+  tuiEnterRepl,
+  tuiEnterTask,
   tuiFinish,
   tuiLog,
   tuiResetTask,
   tuiSetHeader,
   tuiSetThinking,
   tuiSetTodos,
-  tuiShowCursor,
+  tuiShowBanner,
+  tuiShowRecap,
+  tuiShowStartLine,
   type ApprovalDecision,
   type Todo,
 } from './tui.js';
@@ -197,7 +202,6 @@ tuiSetHeader(
 const seenMsgIds = new Set<string>();
 let lastAnswer = '';
 let autoApproveAll = false; // 「本次会话全部批准」开关
-let activeRli: ReturnType<typeof readline.createInterface> | null = null; // REPL readline
 
 function textOf(content: unknown): string {
   if (typeof content === 'string') return content;
@@ -261,7 +265,7 @@ function ingest(chunk: Record<string, unknown>): HITLRequest | null {
   }
 
   const interrupts = (chunk as { __interrupt__?: Array<Interrupt<HITLRequest>> }).__interrupt__;
-  render();
+  // Ink 声明式渲染：store 变更后 React 自动 diff，无需手动 render()
   return interrupts?.[0]?.value ?? null;
 }
 
@@ -269,9 +273,10 @@ function ingest(chunk: Record<string, unknown>): HITLRequest | null {
 
 async function runTask(userInput: string): Promise<void> {
   tuiResetTask();
+  tuiEnterTask();
   lastAnswer = '';
-  // 日志与思考态一起更新、一次渲染（否则「用户：x」空白帧和「🤔 思考中」帧会连刷两屏）
-  tuiLog(`${A.dim}用户：${userInput.split('\n')[0].slice(0, 60)}${A.reset}`, true);
+  // Ink 声明式渲染：store 变更后 React 自动 diff，无需手动 render()
+  tuiLog(`${A.dim}用户：${userInput.split('\n')[0].slice(0, 60)}${A.reset}`);
   tuiSetThinking(true);
 
   let input: unknown = { messages: [new HumanMessage(userInput)] };
@@ -309,14 +314,6 @@ async function runTask(userInput: string): Promise<void> {
           name: r.name,
           summary: summarizeArgs(r.name, r.args ?? {}),
         })),
-        // raw mode 的按键（y/n/方向键）可能进了 readline 缓冲，清空避免污染下一轮输入
-        () => {
-          if (activeRli) {
-            const rw = activeRli as unknown as { line: string; cursor: number };
-            rw.line = '';
-            rw.cursor = 0;
-          }
-        },
       );
     }
 
@@ -348,8 +345,6 @@ async function runTask(userInput: string): Promise<void> {
   }
 
   tuiFinish(lastAnswer || '（无回复）');
-  tuiShowCursor();
-  console.log('');
 
   // 记录/更新会话索引（新会话用首条输入作标题），下次启动可在历史列表看到
   sessionStore.recordTask(activeThreadId, titleOf(userInput));
@@ -385,35 +380,42 @@ async function printRecap(): Promise<void> {
       }
     }
     if (!lastHuman && !lastAi) return;
-    console.log(A.dim);
-    console.log('💬 上次对话（直接输入即可继续）：');
-    if (lastHuman) console.log(`  你：${lastHuman.slice(0, 80)}`);
-    if (lastAi) console.log(`  助手：${lastAi.slice(0, 200)}${lastAi.length > 200 ? '…' : ''}`);
-    console.log(A.reset);
-    console.log('');
+    // 通过 store 推送回顾信息，Ink 统一渲染（不再 console.log）
+    tuiShowRecap({
+      human: lastHuman.slice(0, 80),
+      ai: lastAi.length > 200 ? `${lastAi.slice(0, 200)}…` : lastAi,
+    });
   } catch {
     // 回顾失败不阻塞进入会话
   }
 }
 
 async function main(): Promise<void> {
+  // 启动 Ink TUI（接管 stdout/stdin，声明式渲染 + React diff）
+  startTui();
+
   if (oneShotTask) {
     // 单任务模式：命令行参数即任务，跑完退出（每次新会话，仍会记入历史）
+    tuiShowBanner({
+      mode: backendMode === 'sandbox' ? '☁️ LangSmith 云沙箱' : '💻 本机（真实磁盘 + shell）',
+      cwd: rootDir,
+      skills: skillCount > 0 ? `${skillCount} 个技能（${skillsHostDir}）` : `未配置（放 SKILL.md 到 ${skillsHostDir}/<技能名>/）`,
+      mcp: mcpStatus,
+      memory: `${memoryHostFile}${existsSync(memoryHostFile) ? '' : '（尚不存在，agent 可自行创建）'}`,
+    });
     await runTask(oneShotTask);
+    stopTui();
     return;
   }
 
-  console.log(A.bold);
-  console.log('🧑‍💻 DeepAgents Coding Agent');
-  console.log(`   模式：${backendMode === 'sandbox' ? '☁️ LangSmith 云沙箱' : '💻 本机（真实磁盘 + shell）'}`);
-  console.log(`   工作目录：${rootDir}`);
-  console.log(
-    `   Skills：${skillCount > 0 ? `${skillCount} 个技能（${skillsHostDir}）` : `未配置（放 SKILL.md 到 ${skillsHostDir}/<技能名>/）`}`,
-  );
-  console.log(`   MCP：${mcpStatus}`);
-  console.log(`   记忆：${memoryHostFile}${existsSync(memoryHostFile) ? '' : '（尚不存在，agent 可自行创建）'}`);
-  console.log(A.reset);
-  console.log('');
+  // 启动横幅（通过 store 推送，Ink 渲染——不再 console.log）
+  tuiShowBanner({
+    mode: backendMode === 'sandbox' ? '☁️ LangSmith 云沙箱' : '💻 本机（真实磁盘 + shell）',
+    cwd: rootDir,
+    skills: skillCount > 0 ? `${skillCount} 个技能（${skillsHostDir}）` : `未配置（放 SKILL.md 到 ${skillsHostDir}/<技能名>/）`,
+    mcp: mcpStatus,
+    memory: `${memoryHostFile}${existsSync(memoryHostFile) ? '' : '（尚不存在，agent 可自行创建）'}`,
+  });
 
   // 会话选择：首项「开始新会话」默认高亮，直接回车即新会话；
   // ↑/↓ 选历史会话回车则恢复（对话状态从 SQLite 读回）。
@@ -430,65 +432,43 @@ async function main(): Promise<void> {
   if (picked === 0) {
     activeThreadId = `demo20-${Date.now()}`;
     config.configurable.thread_id = activeThreadId;
-    console.log(`${A.dim}▶ 开始新会话${A.reset}\n`);
+    tuiShowStartLine('▶ 开始新会话');
   } else {
     const meta = sessions[picked - 1];
     activeThreadId = meta.threadId;
     config.configurable.thread_id = activeThreadId;
-    console.log(
-      `${A.dim}▶ 恢复会话：${meta.title}（${meta.tasks} 个任务，最后活跃 ${formatRelative(meta.updatedAt)}）${A.reset}`,
+    tuiShowStartLine(
+      `▶ 恢复会话：${meta.title}（${meta.tasks} 个任务，最后活跃 ${formatRelative(meta.updatedAt)}）`,
     );
     await printRecap();
   }
 
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  activeRli = rl;
-
+  // REPL 主循环：Ink 行输入接管（取代 node:readline，不再有 raw mode 冲突）
   for (;;) {
-    const promptText = `${A.cyan}❯${A.reset} `;
-    const questionPromise = rl.question(promptText).catch(() => null);
-    // question 收到 Enter 后会重绘一次提示符；立刻把 prompt 置空，
-    // 让那次重绘输出空串，避免 TUI 中残留一行 `❯`
-    rl.setPrompt('');
-    const answer = await questionPromise;
-    if (answer === null) break;
+    tuiEnterRepl();
+    const answer = await askReplInput();
     const task = answer.trim();
     if (!task) continue;
     if (task === '/exit' || task === '/quit') break;
 
-    rl.pause(); // 暂停行编辑，把 stdin 交给审批 raw mode
     try {
       await runTask(task);
     } catch (error) {
-      tuiShowCursor();
       const message = error instanceof Error ? error.message : String(error);
-      console.error(`${A.red}任务执行出错：${message}${A.reset}`);
-    }
-    rl.resume();
-    // 实测 Node v26 两个坑（readline 不再自行管理 tty 状态）：
-    // 1) pause() 不会停止输入累积——任务执行期间的误触按键、审批 raw mode 的
-    //    y/n/方向键都会被 readline 静默收进行缓冲，预填进下一条输入，必须清空；
-    // 2) pause/resume/question 都不会恢复 raw mode——审批 cleanup 关掉后 tty 回到
-    //    熟模式，方向键被直接回显成 ^[[D/^[[C 且无法移动光标，必须显式开回。
-    const rw = rl as unknown as { line: string; cursor: number };
-    rw.line = '';
-    rw.cursor = 0;
-    if (process.stdin.isTTY) {
-      process.stdin.setRawMode(true);
+      tuiLog(`${A.red}任务执行出错：${message}${A.reset}`);
     }
   }
 
-  rl.close();
-  tuiShowCursor();
+  stopTui();
 }
 
 process.on('SIGINT', () => {
-  tuiShowCursor();
+  stopTui();
   process.exit(0);
 });
 
 main().catch((error: unknown) => {
-  tuiShowCursor();
+  stopTui();
   const message = error instanceof Error ? error.message : String(error);
   console.error(`\n${A.red}启动失败：${message}${A.reset}`);
   process.exitCode = 1;

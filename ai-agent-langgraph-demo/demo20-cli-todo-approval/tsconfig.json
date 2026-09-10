@@ -1,7 +1,9 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   },
-  "include": ["./*.ts", "../model.ts"]
+  "include": ["./*.ts", "./*.tsx", "../model.ts", "test/repl-input.test.ts"]
 }
