@@ -9,7 +9,7 @@ dotenv.config({
 });
 
 function requiredEnv(
-  name: 'OPENAI_API_KEY' | 'OPENAI_BASE_URL',
+  name: 'MODEL' | 'OPENAI_API_KEY' | 'OPENAI_BASE_URL',
 ): string {
   const value = process.env[name]?.trim();
 
@@ -20,18 +20,14 @@ function requiredEnv(
   return value;
 }
 
-// 沙箱演示使用的模型：qwen3.8-27b 免费额度已耗尽，改用有额度的
-// qwen3.8-27b（沿用 .env 中 AL 供应商的 apiKey / baseURL）。
-const MODEL_NAME = 'qwen3.8-27b';
-
 /**
- * demo17 沙箱专用模型：
+ * demo20 专用模型：
  *
- * 沙箱 Agent 需要生成 write_file / edit_file 的长参数和 execute 命令，
- * maxTokens 过小（如根目录的 1000）会把工具参数截断（工具调用丢失、
- * 回复为空），与 demo13 的教训一致，这里放宽到 4000。
+ * 与 demo13 相同的配置考量——DeepAgent 的 write_file 会把整份文件内容放进
+ * 工具参数，maxTokens 过小会导致工具调用生成到一半被截断；同时关闭思考模式
+ * 以避免长任务下多次模型调用叠加超时。
  */
-export const model = await initChatModel(MODEL_NAME, {
+export const model = await initChatModel(requiredEnv('MODEL'), {
   modelProvider: 'openai',
   apiKey: requiredEnv('OPENAI_API_KEY'),
   configuration: {
@@ -39,7 +35,9 @@ export const model = await initChatModel(MODEL_NAME, {
   },
   temperature: 0.7,
   maxTokens: 4_000,
-  timeout: 60_000,
+  timeout: 300_000,
   maxRetries: 2,
+  // qwen3.8：关闭思考模式，显著提速（思考模式下长任务易超时）
+  modelKwargs: { enable_thinking: false },
   configurableFields: ['temperature', 'maxTokens'],
 });

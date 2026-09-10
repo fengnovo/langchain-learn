@@ -129,7 +129,7 @@ MOCK_MODE=false
 ```env
 LLM_API_KEY=...
 LLM_BASE_URL=...
-LLM_MODEL=qwen3.8-max-0902
+LLM_MODEL=qwen3.8-27b
 EMBEDDING_BASE_URL=http://localhost:11434/v1
 EMBEDDING_API_KEY=ollama
 EMBEDDING_MODEL=qwen3.7-text-embedding

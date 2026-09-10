@@ -85,7 +85,7 @@ app.post('/agent', async (req, res) => {
   ];
 
   const first = await client.chat.completions.create({
-    model: 'qwen3.8-max-0902',
+    model: 'qwen3.8-27b',
     messages,
     tools,
   });
@@ -113,7 +113,7 @@ app.post('/agent', async (req, res) => {
     });
 
     const second = await client.chat.completions.create({
-      model: 'qwen3.8-max-0902',
+      model: 'qwen3.8-27b',
       messages,
       tools,
     });
@@ -149,7 +149,7 @@ app.post('/agent', async (req, res) => {
      * 让模型把工具结果转换成人话。
      */
     const final = await client.chat.completions.create({
-      model: 'qwen3.8-max-0902',
+      model: 'qwen3.8-27b',
       messages,
     });
     res.json({ answer: final.choices[0].message.content });

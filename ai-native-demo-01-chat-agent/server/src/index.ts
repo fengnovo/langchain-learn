@@ -38,7 +38,7 @@ app.post('/chat', async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
   const stream = await client.chat.completions.create({
-    model: 'qwen3.8-max-0902',
+    model: 'qwen3.8-27b',
     messages,
     stream: true,
   });

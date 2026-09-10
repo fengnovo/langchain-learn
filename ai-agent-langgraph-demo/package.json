@@ -29,6 +29,7 @@
     "typecheck:demo12": "tsc -p demo12-middleware/tsconfig.json",
     "demo13": "tsx demo13-deep-agents/demo.ts",
     "demo13:2": "tsx demo13-deep-agents/demo2.ts",
+    "demo13:3": "tsx demo13-deep-agents/demo3.ts",
     "typecheck:demo13": "tsc -p demo13-deep-agents/tsconfig.json",
     "demo14": "tsx demo14-deepagents-subagents/demo.ts",
     "demo14:2": "tsx demo14-deepagents-subagents/demo2.ts",
@@ -51,6 +52,8 @@
     "demo19": "node --import tsx demo19-LlamaIndex-GraphRAG/index.ts",
     "typecheck:demo19": "tsc -p demo19-LlamaIndex-GraphRAG/tsconfig.json",
     "test:demo19": "node --import tsx --test demo19-LlamaIndex-GraphRAG/graph.test.ts",
+    "demo20": "tsx demo20-cli-todo-approval/cli.ts",
+    "typecheck:demo20": "tsc -p demo20-cli-todo-approval/tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

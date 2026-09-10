@@ -113,7 +113,7 @@ pnpm demo17:2
 pnpm typecheck:demo17
 ```
 
-本目录模型固定为 `qwen3.8-max-0902`（[model.ts](./model.ts)，`qwen3.8-max-0902`
+本目录模型固定为 `qwen3.8-27b`（[model.ts](./model.ts)，`qwen3.8-27b`
 免费额度已耗尽）；`maxTokens=4000` 防止 `write_file` 长参数被截断（见 demo13）。
 
 ## 6. Python 与 TypeScript API 对照

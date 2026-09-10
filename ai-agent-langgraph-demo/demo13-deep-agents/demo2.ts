@@ -29,11 +29,13 @@ import { model } from './model.js';
 
 // 用户赋予的额外工具：联网搜索（模拟实现）
 const internetSearch = tool(
-  ({ query }) =>
-    `（模拟搜索结果）关于「${query}」：\n` +
-    `1. 上下文隔离：子代理的中间过程（多轮搜索、阅读）不会进入主代理上下文；\n` +
-    `2. 文件系统共享：子代理写入的文件主代理可以直接读取；\n` +
-    `3. 适用场景：需要大量中间探索步骤的研究、分析类子任务。`,
+  ({ query }) => {
+    console.log('==============调用了internetSearch==========');
+    return `（模拟搜索结果）关于「${query}」：
+1. 上下文隔离：子代理的中间过程（多轮搜索、阅读）不会进入主代理上下文；
+2. 文件系统共享：子代理写入的文件主代理可以直接读取；
+3. 适用场景：需要大量中间探索步骤的研究、分析类子任务。`;
+  },
   {
     name: 'internet_search',
     description: '针对特定查询执行互联网搜索。',
@@ -67,6 +69,10 @@ const writer: SubAgent = {
  * - 主代理不直接持有 internet_search（检索能力下沉到 researcher 子代理）；
  * - subagents 列表中的子代理可通过内置 task 工具按 name 调用；
  * - 未传 backend 时使用默认 StateBackend，文件在主/子代理间共享。
+ StateBackend 的文件系统是虚拟的、嵌在图状态（内存）里的：
+researcher 写的 findings.md、writer 写的 report.md 都只是状态里的虚拟文件，
+主/子代理之间能互相读写（记忆互通），但从来不会写到真实磁盘；
+进程一结束（demo2 也没配 checkpointer），这些虚拟文件就没了。
  */
 const agent = createDeepAgent({
   model,
@@ -101,7 +107,15 @@ async function main(): Promise<void> {
     messages: [new HumanMessage('你好，调研下美国经济')],
   });
 
-  console.log(`task（子代理调用）次数：${countTaskCalls(result)}`);
+  // console.log(`task（子代理调用）次数：${countTaskCalls(result)}`);
+  for (const m of result.messages as Array<{ tool_calls?: Array<{ name?: string; args?: Record<string, unknown> }> }>) {
+    for (const call of m.tool_calls ?? []) {
+      if (call.name === 'task') {
+        console.log(`委托 → subagent_type=${call.args?.subagent_type}，任务：${call.args?.description}`);
+      }
+    }
+  }
+  console.log('----------------------------------------------------------');
   console.log(`最终回复：${finalText(result)}`);
 }
 

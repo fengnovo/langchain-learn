@@ -68,7 +68,7 @@ ${question}
 `;
   console.log('prompt: ', prompt);
   const answer = await client.chat.completions.create({
-    model: 'qwen3.8-max-0902',
+    model: 'qwen3.8-27b',
     messages: [
       {
         role: 'user',
