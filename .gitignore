@@ -9,3 +9,5 @@ _data
 lancedb-data
 pdfResultSplit.json
 summaryResult.json
+ai-agent-langgraph-demo/demo20-cli-todo-approval/sessions
+ai-agent-langgraph-demo/demo20-cli-todo-approval/workspace

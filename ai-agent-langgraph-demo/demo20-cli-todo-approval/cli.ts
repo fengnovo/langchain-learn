@@ -1,12 +1,15 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import readline from 'node:readline/promises';
 
 import { AIMessage, HumanMessage, ToolMessage } from '@langchain/core/messages';
-import { Command, MemorySaver } from '@langchain/langgraph';
+import { Command } from '@langchain/langgraph';
+import { SqliteSaver } from '@langchain/langgraph-checkpoint-sqlite';
+import { MultiServerMCPClient } from '@langchain/mcp-adapters';
 import {
   humanInTheLoopMiddleware,
+  modelCallLimitMiddleware,
   todoListMiddleware,
   type HITLRequest,
   type HITLResponse,
@@ -19,6 +22,7 @@ import { model } from './model.js';
 import {
   A,
   askApproval,
+  pickSession,
   render,
   tuiFinish,
   tuiLog,
@@ -30,6 +34,7 @@ import {
   type ApprovalDecision,
   type Todo,
 } from './tui.js';
+import { SessionStore, formatRelative, titleOf } from './sessions.js';
 
 /**
  * demo20：可实际使用的 Coding Agent CLI
@@ -72,40 +77,78 @@ function parseArgs(): { cwd: string; oneShotTask: string | null } {
 const { cwd: rootDir, oneShotTask } = parseArgs();
 mkdirSync(rootDir, { recursive: true });
 
-// 准备 skills 目录（backend 视角下的 /skills/），放一个示例技能
-const skillsDir = path.join(rootDir, 'skills');
-mkdirSync(path.join(skillsDir, 'commit-message'), { recursive: true });
-writeFileSync(
-  path.join(skillsDir, 'commit-message', 'SKILL.md'),
-  [
-    '---',
-    'name: "commit-message"',
-    'description: "生成规范的 git commit message。当用户要求提交代码、写 commit 信息时使用。"',
-    '---',
-    '',
-    '# Commit Message 规范',
-    '',
-    '格式：`<type>(<scope>): <subject>`',
-    '',
-    '- type：feat（新功能）/ fix（修复）/ docs（文档）/ style（格式）/ refactor（重构）/ test（测试）/ chore（杂务）',
-    '- subject：简明扼要，不超过 50 字，末尾不加句号',
-    '- body（可选）：说明「做了什么」和「为什么」，每行不超过 72 字',
-  ].join('\n'),
-);
+// 可扩展资源目录：与 workspace 同级（都在 demo20-cli-todo-approval/ 下），
+// agent 只读取、不生成；没有就不加载：
+//   skills/<技能名>/SKILL.md  Agent Skills（目录存在才挂载）
+//   mcp/mcp.json              MCP 服务器配置（文件存在才连接，工具并入 agent）
+//   AGENTS.md                 长期记忆（启动时注入 system prompt；不存在静默跳过）
+//
+// 路径说明：backend 的 root 是 workspace/，且 LocalShellBackend 为
+// virtualMode:false（相对路径按 root 解析、允许 .. 跳出），所以宿主目录
+// demoDir/skills 在 backend 视角就是 ../skills/。
+const skillsHostDir = path.join(demoDir, 'skills');
+const mcpConfigPath = path.join(demoDir, 'mcp', 'mcp.json');
+const memoryHostFile = path.join(demoDir, 'AGENTS.md');
+
+// 会话持久化：对话状态（消息/todos/中断点）落 sessions/checkpoints.db，
+// 会话列表元数据落 sessions/index.json——进程退出后可恢复历史会话。
+const sessionStore = new SessionStore(demoDir);
+
+function countSkills(dir: string): number {
+  if (!existsSync(dir)) return 0;
+  return readdirSync(dir, { withFileTypes: true }).filter(
+    (entry) => entry.isDirectory() && existsSync(path.join(dir, entry.name, 'SKILL.md')),
+  ).length;
+}
 
 // ------------------------------ Agent 构建 --------------------------------
 
 const { backend, mode: backendMode } = await createBackend(rootDir);
 
-const checkpointer = new MemorySaver();
+// Skills：宿主目录存在才传给 agent（backend 视角 ../skills/）
+const skillCount = countSkills(skillsHostDir);
+const skillSources = skillCount > 0 ? ['../skills/'] : [];
+
+// Memory：长期记忆文件（AGENTS.md）。middleware 读取失败（文件不存在）会静默跳过，
+// agent 之后可通过 write_file 自行创建，所以这里无条件挂载。
+const memorySources = ['../AGENTS.md'];
+
+// MCP：mcp/mcp.json 存在才连接。配置格式同 MultiServerMCPClient 的 ClientConfig：
+//   { "servers": { "名字": { "transport": "stdio", "command": "...", "args": [...] } } }
+const mcpTools: unknown[] = [];
+let mcpStatus = '未配置（mcp/mcp.json 不存在）';
+if (existsSync(mcpConfigPath)) {
+  try {
+    const mcpConfig = JSON.parse(readFileSync(mcpConfigPath, 'utf8')) as {
+      servers?: Record<string, unknown>;
+    };
+    const mcpClient = new MultiServerMCPClient(mcpConfig as never);
+    const tools = await mcpClient.getTools();
+    mcpTools.push(...tools);
+    mcpStatus = `已连接 ${Object.keys(mcpConfig.servers ?? {}).length} 个服务器、${tools.length} 个工具`;
+  } catch (error) {
+    mcpStatus = `加载失败：${error instanceof Error ? error.message : String(error)}`;
+  }
+}
+
+// 持久化 checkpointer：对话状态写入 SQLite，进程重启后按 thread_id 恢复
+const checkpointer = SqliteSaver.fromConnString(sessionStore.dbPath);
 
 const agent = createDeepAgent({
   model,
   checkpointer,
   // 真实磁盘 + 本机 shell（或云沙箱）
   backend: backend as never,
-  // 技能目录：backend 视角 /skills/ → 磁盘 rootDir/skills/
-  skills: ['/skills/'],
+  // MCP 服务器工具（mcp/mcp.json 存在时才有内容）
+  tools: mcpTools as never,
+  // Agent Skills：demo20-cli-todo-approval/skills/（backend 视角 ../skills/）
+  skills: skillSources,
+  // 长期记忆：demo20-cli-todo-approval/AGENTS.md（backend 视角 ../AGENTS.md）
+  memory: memorySources,
+  // 注：上下文摘要（summarization）由 createDeepAgent 默认栈内置
+  // （createSummarizationMiddleware），trigger/keep 按模型 profile 自动计算，
+  // 被压缩的历史写入 backend 的 /conversation_history/session_<id>.md
+  // （磁盘 workspace/conversation_history/），无需也不应重复挂载。
   systemPrompt: [
     `你是一个运行在终端里的编码助手（coding agent），工作目录是：${rootDir}`,
     '规则：',
@@ -116,10 +159,14 @@ const agent = createDeepAgent({
     '5. write_file / edit_file / delete / execute 调用前会弹出人工审批，这是正常流程，批准后继续；',
     '6. 纯调研、检索类子任务可以用 task 工具委托子代理；但代码修改和命令执行你亲自完成；',
     '7. 全部完成后用简短中文总结：改了什么、验证结果如何。',
+    '8. 长期记忆：工作目录上级有 AGENTS.md（backend 路径 ../AGENTS.md），每次启动会注入你的上下文。' +
+      '学到用户偏好、项目约定、反复踩的坑时，用 write_file 更新它（追加/修订对应条目）；临时信息不要写。',
   ].join('\n'),
   middleware: [
     // 任务规划：write_todos 工具 + todos 状态
     todoListMiddleware(),
+    // 模型调用上限：run = 单次任务、thread = 整个会话；超限优雅结束而非死循环烧钱
+    modelCallLimitMiddleware({ runLimit: 60, threadLimit: 300, exitBehavior: 'end' }),
     // 人工审批：写 / 改 / 删文件、执行 shell 命令前中断
     humanInTheLoopMiddleware({
       interruptOn: {
@@ -132,8 +179,10 @@ const agent = createDeepAgent({
   ],
 });
 
+// 当前会话线程 ID：启动时由会话选择器决定（新会话或恢复历史会话）
+let activeThreadId = `demo20-${Date.now()}`;
 const config = {
-  configurable: { thread_id: `demo20-${Date.now()}` },
+  configurable: { thread_id: activeThreadId },
   recursionLimit: 80,
   // deepagents 的 stream 默认产出自定义事件；values 模式才能拿到完整状态
   streamMode: 'values' as const,
@@ -188,8 +237,9 @@ function ingest(chunk: Record<string, unknown>): HITLRequest | null {
     if (id) seenMsgIds.add(id);
 
     if (msg instanceof AIMessage) {
-      // 模型已经开口（含工具调用），结束「思考中」状态
-      tuiSetThinking(false);
+      // 模型开口后不立刻关闭「思考中」：纯对话时紧接 tuiFinish 最终帧、
+      // 工具调用时紧接工具日志/审批帧，中间插一个底部空白的帧只会造成刷屏。
+      // thinking 统一由 ToolMessage（进入下一轮）和 tuiFinish（任务结束）管理。
       const text = textOf(msg.content).trim();
       if (text) lastAnswer = text;
       for (const tc of msg.tool_calls ?? []) {
@@ -220,7 +270,8 @@ function ingest(chunk: Record<string, unknown>): HITLRequest | null {
 async function runTask(userInput: string): Promise<void> {
   tuiResetTask();
   lastAnswer = '';
-  tuiLog(`${A.dim}用户：${userInput.split('\n')[0].slice(0, 60)}${A.reset}`);
+  // 日志与思考态一起更新、一次渲染（否则「用户：x」空白帧和「🤔 思考中」帧会连刷两屏）
+  tuiLog(`${A.dim}用户：${userInput.split('\n')[0].slice(0, 60)}${A.reset}`, true);
   tuiSetThinking(true);
 
   let input: unknown = { messages: [new HumanMessage(userInput)] };
@@ -299,26 +350,99 @@ async function runTask(userInput: string): Promise<void> {
   tuiFinish(lastAnswer || '（无回复）');
   tuiShowCursor();
   console.log('');
+
+  // 记录/更新会话索引（新会话用首条输入作标题），下次启动可在历史列表看到
+  sessionStore.recordTask(activeThreadId, titleOf(userInput));
 }
 
 // --------------------------------- REPL -----------------------------------
 
+/** 恢复历史会话后，从 checkpoint 取出上一轮「你问 / 助手答」做个简短回顾。
+ *  同时预加载 seenMsgIds——进程重启后 seenMsgIds 是空的，而 stream 的第一个
+ *  values chunk 包含全部历史消息；不预加载的话 ingest 会把每条历史消息当新消息
+ *  重新 tuiLog + render，导致恢复会话时剧烈刷屏。
+ */
+async function printRecap(): Promise<void> {
+  try {
+    const snapshot = (await agent.getState(config)) as {
+      values?: { messages?: unknown[] };
+    };
+    const messages = snapshot.values?.messages ?? [];
+    // 预加载：把 checkpoint 里所有消息 ID 标记为已见，stream 产出时直接跳过
+    for (const m of messages) {
+      const id = (m as { id?: string }).id;
+      if (id) seenMsgIds.add(id);
+    }
+    let lastHuman = '';
+    let lastAi = '';
+    for (const m of messages) {
+      if (m instanceof HumanMessage) {
+        const t = textOf(m.content).trim();
+        if (t) lastHuman = t;
+      } else if (m instanceof AIMessage) {
+        const t = textOf(m.content).trim();
+        if (t) lastAi = t;
+      }
+    }
+    if (!lastHuman && !lastAi) return;
+    console.log(A.dim);
+    console.log('💬 上次对话（直接输入即可继续）：');
+    if (lastHuman) console.log(`  你：${lastHuman.slice(0, 80)}`);
+    if (lastAi) console.log(`  助手：${lastAi.slice(0, 200)}${lastAi.length > 200 ? '…' : ''}`);
+    console.log(A.reset);
+    console.log('');
+  } catch {
+    // 回顾失败不阻塞进入会话
+  }
+}
+
 async function main(): Promise<void> {
   if (oneShotTask) {
-    // 单任务模式：命令行参数即任务，跑完退出
+    // 单任务模式：命令行参数即任务，跑完退出（每次新会话，仍会记入历史）
     await runTask(oneShotTask);
     return;
   }
-
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  activeRli = rl;
 
   console.log(A.bold);
   console.log('🧑‍💻 DeepAgents Coding Agent');
   console.log(`   模式：${backendMode === 'sandbox' ? '☁️ LangSmith 云沙箱' : '💻 本机（真实磁盘 + shell）'}`);
   console.log(`   工作目录：${rootDir}`);
-  console.log('   输入任务描述开始；/exit 或 Ctrl+D 退出。');
+  console.log(
+    `   Skills：${skillCount > 0 ? `${skillCount} 个技能（${skillsHostDir}）` : `未配置（放 SKILL.md 到 ${skillsHostDir}/<技能名>/）`}`,
+  );
+  console.log(`   MCP：${mcpStatus}`);
+  console.log(`   记忆：${memoryHostFile}${existsSync(memoryHostFile) ? '' : '（尚不存在，agent 可自行创建）'}`);
   console.log(A.reset);
+  console.log('');
+
+  // 会话选择：首项「开始新会话」默认高亮，直接回车即新会话；
+  // ↑/↓ 选历史会话回车则恢复（对话状态从 SQLite 读回）。
+  const sessions = sessionStore.list();
+  const pickerItems = [
+    { title: '🆕 开始新会话', subtitle: '' },
+    ...sessions.map((s) => ({
+      title: `💬 ${s.title}`,
+      subtitle: `${s.tasks} 个任务 · ${formatRelative(s.updatedAt)}`,
+    })),
+  ];
+  const picked = await pickSession(pickerItems);
+
+  if (picked === 0) {
+    activeThreadId = `demo20-${Date.now()}`;
+    config.configurable.thread_id = activeThreadId;
+    console.log(`${A.dim}▶ 开始新会话${A.reset}\n`);
+  } else {
+    const meta = sessions[picked - 1];
+    activeThreadId = meta.threadId;
+    config.configurable.thread_id = activeThreadId;
+    console.log(
+      `${A.dim}▶ 恢复会话：${meta.title}（${meta.tasks} 个任务，最后活跃 ${formatRelative(meta.updatedAt)}）${A.reset}`,
+    );
+    await printRecap();
+  }
+
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  activeRli = rl;
 
   for (;;) {
     const promptText = `${A.cyan}❯${A.reset} `;

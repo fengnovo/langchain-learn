@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { model } from './model.js';
 
 /**
+ * 这demo是为了演示 DeepAgent 性能 / 资源控制 3个优化手段
  * DeepAgent 性能 / 资源控制三手段（多子代理、调用数增多时）：
  *
  * 1. recursionLimit（递归 / 超步上限）：LangGraph 图执行的「超步
