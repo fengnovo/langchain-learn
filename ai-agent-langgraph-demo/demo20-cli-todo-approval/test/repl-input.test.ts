@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { editReplBuffer, splitReplCursor, type ReplKey } from '../repl-input.js';
+import { editReplBuffer, splitReplCursor } from '../src/tui/repl-input.js';
+import type { ReplKey } from '../src/tui/types.js';
 
 const noKey: ReplKey = {};
 

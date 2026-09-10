@@ -52,7 +52,7 @@
     "demo19": "node --import tsx demo19-LlamaIndex-GraphRAG/index.ts",
     "typecheck:demo19": "tsc -p demo19-LlamaIndex-GraphRAG/tsconfig.json",
     "test:demo19": "node --import tsx --test demo19-LlamaIndex-GraphRAG/graph.test.ts",
-    "demo20": "tsx demo20-cli-todo-approval/cli.ts",
+    "demo20": "tsx demo20-cli-todo-approval/src/cli.ts",
     "typecheck:demo20": "tsc -p demo20-cli-todo-approval/tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -87,6 +87,7 @@
     "express": "^5.2.1",
     "ink": "^5.2.1",
     "langchain": "^1.5.10",
+    "langsmith": "^0.9.0",
     "llamaindex": "^0.12.1",
     "pg": "^8.23.0",
     "react": "^18.3.1",

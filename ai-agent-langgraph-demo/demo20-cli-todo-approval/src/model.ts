@@ -1,12 +1,6 @@
-import dotenv from 'dotenv';
-import { fileURLToPath } from 'node:url';
-import { initChatModel } from 'langchain/chat_models/universal';
+import './langsmith.js';
 
-// 无论从项目根目录还是其他目录执行，都固定读取项目根目录的 .env。
-dotenv.config({
-  path: fileURLToPath(new URL('../.env', import.meta.url)),
-  quiet: true,
-});
+import { initChatModel } from 'langchain/chat_models/universal';
 
 function requiredEnv(
   name: 'MODEL' | 'OPENAI_API_KEY' | 'OPENAI_BASE_URL',
@@ -33,7 +27,7 @@ export const model = await initChatModel(requiredEnv('MODEL'), {
   configuration: {
     baseURL: requiredEnv('OPENAI_BASE_URL'),
   },
-  temperature: 0.7,
+  temperature: 1,
   maxTokens: 4_000,
   timeout: 300_000,
   maxRetries: 2,

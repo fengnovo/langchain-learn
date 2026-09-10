@@ -1,19 +1,4 @@
-export interface ReplBuffer {
-  value: string;
-  /** UTF-16 offset. It is always kept on a grapheme boundary. */
-  cursor: number;
-}
-
-export interface ReplKey {
-  ctrl?: boolean;
-  meta?: boolean;
-  backspace?: boolean;
-  delete?: boolean;
-  leftArrow?: boolean;
-  rightArrow?: boolean;
-  upArrow?: boolean;
-  downArrow?: boolean;
-}
+import type { ReplBuffer, ReplCursorView, ReplKey } from './types.js';
 
 const graphemeSegmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
 
@@ -33,14 +18,12 @@ function nextBoundary(value: string, cursor: number): number {
   return value.length;
 }
 
-/**
- * Apply one Ink `useInput` event to the editable REPL buffer.
- *
- * Ink 5 reports the ASCII DEL byte (`\x7f`) as `key.delete`. Most terminals
- * send that byte for Backspace, so both `backspace` and `delete` must erase the
- * grapheme before the cursor. Ctrl+D remains available for forward deletion.
- */
-export function editReplBuffer(current: ReplBuffer, input: string, key: ReplKey): ReplBuffer {
+/** 把一次 Ink useInput 事件应用到支持完整 Unicode 字素的输入缓冲区。 */
+export function editReplBuffer(
+  current: ReplBuffer,
+  input: string,
+  key: ReplKey,
+): ReplBuffer {
   const cursor = Math.max(0, Math.min(current.value.length, current.cursor));
 
   if (key.leftArrow) {
@@ -80,12 +63,8 @@ export function editReplBuffer(current: ReplBuffer, input: string, key: ReplKey)
   return { ...current, cursor };
 }
 
-/** Split the buffer around the grapheme rendered as the block cursor. */
-export function splitReplCursor(buffer: ReplBuffer): {
-  before: string;
-  cursorText: string;
-  after: string;
-} {
+/** 将缓冲区拆成光标前、光标字素和光标后三段。 */
+export function splitReplCursor(buffer: ReplBuffer): ReplCursorView {
   const cursor = Math.max(0, Math.min(buffer.value.length, buffer.cursor));
   const end = nextBoundary(buffer.value, cursor);
   return {
