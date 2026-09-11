@@ -78,6 +78,16 @@ export interface Banner {
   memory: string;
 }
 
+export interface AgentActivity {
+  label: string;
+  receivedChars: number;
+  updatedAt: number;
+}
+
+export interface ThinkingIndicatorProps {
+  activity: AgentActivity | null;
+}
+
 export interface UserQuestionState {
   request: UserQuestionRequest;
   highlighted: number;
@@ -96,6 +106,7 @@ export interface TuiState {
   question: UserQuestionState | null;
   finalAnswer: string | null;
   thinking: boolean;
+  activity: AgentActivity | null;
   inputMode: InputMode;
   sessionItems: SessionPickerItem[];
   sessionSelected: number;

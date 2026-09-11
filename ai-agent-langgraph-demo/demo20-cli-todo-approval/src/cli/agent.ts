@@ -141,7 +141,10 @@ export async function createAgentRuntime(settings: CliSettings, sessionStore: Se
       backend: backendMode,
       cwd: settings.cwd,
     },
-    streamMode: 'values' as const,
+    // values 用于渲染完整状态，messages/tools 用于展示模型和工具的实时进度。
+    streamMode: ['values', 'messages', 'tools'] as Array<
+      'values' | 'messages' | 'tools'
+    >,
   };
 
   return {

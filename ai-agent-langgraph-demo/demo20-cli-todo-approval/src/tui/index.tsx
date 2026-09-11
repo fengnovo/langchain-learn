@@ -10,6 +10,7 @@ export {
   tuiFinish,
   tuiLog,
   tuiResetTask,
+  tuiSetActivity,
   tuiSetHeader,
   tuiSetThinking,
   tuiSetTodos,

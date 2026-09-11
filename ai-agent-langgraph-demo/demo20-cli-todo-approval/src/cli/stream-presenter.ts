@@ -8,6 +8,7 @@ import {
   tuiFinish,
   tuiLog,
   tuiResetTask,
+  tuiSetActivity,
   tuiSetThinking,
   tuiSetTodos,
   tuiShowRecap,
@@ -55,11 +56,16 @@ export function summarizeArgs(name: string, args: Record<string, unknown>): stri
 export class StreamPresenter {
   private readonly seenMessageIds = new Set<string>();
   private lastAnswer = '';
+  private activeModelMessageId = '';
+  private modelOutputChars = 0;
+  private modelToolName = '';
+  private lastActivityRenderAt = 0;
 
   beginTask(userInput: string): void {
     tuiResetTask();
     tuiEnterTask();
     this.lastAnswer = '';
+    this.resetModelActivity();
     tuiLog(`${A.dim}用户：${userInput.split('\n')[0].slice(0, 60)}${A.reset}`);
     tuiSetThinking(true);
   }
@@ -70,6 +76,50 @@ export class StreamPresenter {
 
   finish(): void {
     tuiFinish(this.lastAnswer || '（无回复）');
+  }
+
+  /** 消费 messages 模式的增量块，只展示进度，不提前渲染最终回复。 */
+  ingestModelChunk(message: unknown): void {
+    const chunk = message as {
+      id?: string;
+      content?: unknown;
+      tool_call_chunks?: Array<{ name?: string; args?: string }>;
+    };
+    if (chunk.id && chunk.id !== this.activeModelMessageId) {
+      this.resetModelActivity();
+      this.activeModelMessageId = chunk.id;
+    }
+
+    const toolChunks = chunk.tool_call_chunks ?? [];
+    const namedTool = toolChunks.find((toolChunk) => toolChunk.name)?.name;
+    if (namedTool) this.modelToolName = namedTool;
+    this.modelOutputChars +=
+      textOf(chunk.content).length +
+      toolChunks.reduce((total, toolChunk) => total + String(toolChunk.args ?? '').length, 0);
+
+    const now = Date.now();
+    const label = this.modelToolName
+      ? `正在生成 ${this.modelToolName} 参数`
+      : '正在生成模型回复';
+    const labelChanged = namedTool !== undefined;
+    if (labelChanged || now - this.lastActivityRenderAt >= 200) {
+      this.lastActivityRenderAt = now;
+      tuiSetActivity({ label, receivedChars: this.modelOutputChars, updatedAt: now });
+    }
+  }
+
+  /** 消费 tools 模式的生命周期事件，让耗时工具不再显示成“模型思考”。 */
+  ingestToolEvent(event: { event?: string; name?: string }): void {
+    const name = event.name ?? '工具';
+    if (event.event === 'on_tool_start') {
+      tuiSetActivity({
+        label: `正在执行 ${name}`,
+        receivedChars: 0,
+        updatedAt: Date.now(),
+      });
+    } else if (event.event === 'on_tool_end' || event.event === 'on_tool_error') {
+      tuiSetThinking(true);
+    }
   }
 
   ingest(chunk: Record<string, unknown>): AgentInterruptRequest | null {
@@ -85,7 +135,8 @@ export class StreamPresenter {
       if (message instanceof AIMessage) {
         const text = textOf(message.content).trim();
         if (text) this.lastAnswer = text;
-        for (const toolCall of message.tool_calls ?? []) {
+        const toolCalls = message.tool_calls ?? [];
+        for (const toolCall of toolCalls) {
           if (toolCall.name === 'write_todos') {
             tuiLog('📝 模型更新了任务清单');
           } else {
@@ -140,5 +191,12 @@ export class StreamPresenter {
       human: lastHuman.slice(0, 80),
       ai: lastAi.length > 200 ? `${lastAi.slice(0, 200)}…` : lastAi,
     });
+  }
+
+  private resetModelActivity(): void {
+    this.activeModelMessageId = '';
+    this.modelOutputChars = 0;
+    this.modelToolName = '';
+    this.lastActivityRenderAt = 0;
   }
 }

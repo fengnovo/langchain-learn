@@ -1,5 +1,5 @@
 import { tuiStore } from './store.js';
-import type { Banner, Recap, Todo } from './types.js';
+import type { AgentActivity, Banner, Recap, Todo } from './types.js';
 
 export function tuiSetHeader(header: string): void {
   tuiStore.setState({ header });
@@ -16,11 +16,20 @@ export function tuiLog(line: string): void {
 }
 
 export function tuiFinish(answer: string): void {
-  tuiStore.setState({ thinking: false, finalAnswer: answer });
+  tuiStore.setState({ thinking: false, activity: null, finalAnswer: answer });
 }
 
 export function tuiSetThinking(on: boolean): void {
-  tuiStore.setState({ thinking: on });
+  tuiStore.setState({
+    thinking: on,
+    activity: on
+      ? { label: '等待模型响应', receivedChars: 0, updatedAt: Date.now() }
+      : null,
+  });
+}
+
+export function tuiSetActivity(activity: AgentActivity): void {
+  tuiStore.setState({ thinking: true, activity });
 }
 
 export function tuiResetTask(): void {
@@ -28,6 +37,7 @@ export function tuiResetTask(): void {
     todos: [],
     finalAnswer: null,
     thinking: false,
+    activity: null,
     logs: [],
     approval: null,
     question: null,
@@ -52,6 +62,7 @@ export function tuiEnterRepl(): void {
     replInput: '',
     replCursor: 0,
     thinking: false,
+    activity: null,
   });
 }
 

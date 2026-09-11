@@ -32,6 +32,16 @@ interface TaskTraceConfig {
   metadata?: Record<string, unknown>;
 }
 
+interface ToolStreamEvent {
+  event?: string;
+  name?: string;
+}
+
+type AgentStreamEvent =
+  | ['values', Record<string, unknown>]
+  | ['messages', [unknown, Record<string, unknown>]]
+  | ['tools', ToolStreamEvent];
+
 /** 执行一轮任务，处理 interrupt/resume、追踪和会话落盘。 */
 export class TaskRunner {
   private autoApproveAll = false;
@@ -107,10 +117,19 @@ export class TaskRunner {
 
     for (;;) {
       let interruptRequest: AgentInterruptRequest | null = null;
-      const stream = await this.runtime.agent.stream(input as never, this.runtime.config);
-      for await (const chunk of stream) {
-        const request = this.presenter.ingest(chunk as Record<string, unknown>);
-        if (request) interruptRequest = request;
+      const stream = (await this.runtime.agent.stream(
+        input as never,
+        this.runtime.config,
+      )) as unknown as AsyncIterable<AgentStreamEvent>;
+      for await (const [mode, payload] of stream) {
+        if (mode === 'messages') {
+          this.presenter.ingestModelChunk(payload[0]);
+        } else if (mode === 'tools') {
+          this.presenter.ingestToolEvent(payload);
+        } else {
+          const request = this.presenter.ingest(payload);
+          if (request) interruptRequest = request;
+        }
       }
 
       if (!interruptRequest) {

@@ -1,5 +1,5 @@
 import { Box, Text } from 'ink';
-import React, { useSyncExternalStore } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 
 import {
   resolveApproval,
@@ -14,6 +14,40 @@ import { LogList, TodoList } from './components/status-panels.js';
 import { UserQuestionMenu } from './components/user-question-menu.js';
 import { SEP } from './constants.js';
 import { tuiStore } from './store.js';
+import type { ThinkingIndicatorProps } from './types.js';
+
+function formatElapsed(seconds: number): string {
+  if (seconds < 60) return `${seconds}秒`;
+  return `${Math.floor(seconds / 60)}分${String(seconds % 60).padStart(2, '0')}秒`;
+}
+
+function ThinkingIndicator({ activity }: ThinkingIndicatorProps): JSX.Element {
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [, setClock] = useState(0);
+
+  useEffect(() => {
+    const startedAt = Date.now();
+    const timer = setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - startedAt) / 1_000));
+      setClock(Date.now());
+    }, 1_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const idleSeconds = activity
+    ? Math.max(0, Math.floor((Date.now() - activity.updatedAt) / 1_000))
+    : elapsedSeconds;
+  const received = activity?.receivedChars
+    ? ` · 已接收 ${activity.receivedChars.toLocaleString()} 字符`
+    : '';
+
+  return (
+    <Text color="yellow">
+      🤔 {activity?.label ?? '等待模型响应'} · 本轮 {formatElapsed(elapsedSeconds)}
+      {received} · 最近活动 {formatElapsed(idleSeconds)}前
+    </Text>
+  );
+}
 
 export function App(): JSX.Element {
   const state = useSyncExternalStore(tuiStore.subscribe, tuiStore.getState);
@@ -74,7 +108,7 @@ export function App(): JSX.Element {
       ) : state.question ? (
         <UserQuestionMenu onAnswer={resolveUserQuestion} />
       ) : state.thinking ? (
-        <Text color="yellow">🤔 模型思考中…</Text>
+        <ThinkingIndicator activity={state.activity} />
       ) : (
         <Box flexDirection="column">
           {state.finalAnswer && (

@@ -8,6 +8,7 @@ const initialState: TuiState = {
   question: null,
   finalAnswer: null,
   thinking: false,
+  activity: null,
   inputMode: 'none',
   sessionItems: [],
   sessionSelected: 0,
