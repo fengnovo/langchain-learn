@@ -15,6 +15,7 @@ import { createDeepAgent } from 'deepagents';
 import { z } from 'zod';
 
 import { createBackend } from '../backend.js';
+import { E2BSandbox } from '../e2b-sandbox.js';
 import { model } from '../model.js';
 import type { SessionStore } from '../sessions.js';
 import type { UserQuestionAnswer, UserQuestionRequest } from '../tui/types.js';
@@ -58,6 +59,28 @@ function createAskUserTool() {
   );
 }
 
+/**
+ * E2B 专用工具：获取沙箱内端口对应的公网访问 URL。
+ *
+ * Agent 在 E2B 沙箱里起 HTTP 服务后调用此工具，把返回的 URL 直接回复给用户。
+ */
+function createGetPublicUrlTool(sandbox: E2BSandbox) {
+  return tool(
+    ({ port }) => {
+      const url = sandbox.getHost(port);
+      return JSON.stringify({ url, port });
+    },
+    {
+      name: 'get_public_url',
+      description:
+        '获取 E2B 沙箱内指定端口对应的公网可访问 URL。在用 execute 起好 HTTP 服务（如 `python3 -m http.server 3000 &`）后调用此工具，把返回的 URL 回复给用户在浏览器打开。',
+      schema: z.object({
+        port: z.number().int().min(1).max(65535).describe('沙箱内 HTTP 服务监听的端口号'),
+      }),
+    },
+  );
+}
+
 async function loadMcpTools(configPath: string): Promise<{
   tools: unknown[];
   status: string;
@@ -86,21 +109,46 @@ async function loadMcpTools(configPath: string): Promise<{
 
 /** 创建 Agent 及其运行配置，不包含 TUI、会话选择和任务循环。 */
 export async function createAgentRuntime(settings: CliSettings, sessionStore: SessionStore) {
-  const { backend, mode: backendMode } = await createBackend(settings.cwd);
+  const { backend, mode: backendMode, sandboxCwd } = await createBackend(settings.cwd);
   const skillSources = settings.skillCount > 0 ? ['../skills/'] : [];
-  const memorySources = ['../AGENTS.md'];
   const mcp = await loadMcpTools(settings.mcpConfigPath);
   const checkpointer = SqliteSaver.fromConnString(sessionStore.dbPath);
+
+  // 云沙箱模式下，Agent 实际操作的路径在沙箱内部（如 /home/user），
+  // 而不是宿主机的 settings.cwd。本地模式两者一致。
+  const agentCwd = sandboxCwd ?? settings.cwd;
+  const isCloudSandbox = backendMode === 'e2b' || backendMode === 'sandbox';
+
+  // memory 路径在云沙箱里读不到（沙箱看不到宿主机文件），
+  // 云沙箱模式跳过 memory 加载；skills 仍可读因 deepagents 走本地 fs。
+  const memorySources = isCloudSandbox ? [] : ['../AGENTS.md'];
+
+  // E2B 模式下注入 get_public_url 工具，让 Agent 能查到端口对应的公网访问地址
+  const extraTools = backend instanceof E2BSandbox ? [createGetPublicUrlTool(backend)] : [];
 
   const agent = createDeepAgent({
     model,
     checkpointer,
     backend: backend as never,
-    tools: [createAskUserTool(), ...mcp.tools] as never,
+    tools: [createAskUserTool(), ...extraTools, ...mcp.tools] as never,
     skills: skillSources,
     memory: memorySources,
     systemPrompt: [
-      `你是一个运行在终端里的编码助手（coding agent），工作目录是：${settings.cwd}`,
+      `你是一个运行在终端里的编码助手（coding agent），工作目录是：${agentCwd}`,
+      ...(isCloudSandbox
+        ? [
+            `【重要】你当前运行在云沙箱（${backendMode}）中，这是一个隔离的 Linux 容器。` +
+              `宿主机路径（如 /Users/...）在沙箱内不存在。所有文件操作必须使用沙箱内路径：${agentCwd} 下。` +
+              `沙箱销毁后文件会丢失，如需持久化请在回复中提示用户保存。`,
+            ...(backendMode === 'e2b'
+              ? [
+                  '起常驻服务（如 HTTP server）时：命令以 `&` 结尾后台运行（如 `python3 -m http.server 3000 &`），' +
+                    'execute 工具会立即返回不阻塞。起好之后调用 `get_public_url` 工具传端口号，' +
+                    '它会返回一个公网可访问的 URL，把该 URL 直接回复给用户在浏览器打开即可。',
+                ]
+              : []),
+          ]
+        : []),
       '规则：',
       '1. 所有文件路径使用绝对路径；动手前先用 ls / glob / grep 了解项目结构；',
       '2. 需要跑命令（安装依赖、测试、构建、类型检查、git 等）时使用 execute 工具，命令在工作目录下执行；',
@@ -139,7 +187,7 @@ export async function createAgentRuntime(settings: CliSettings, sessionStore: Se
       thread_id: activeThreadId,
       application: 'demo20-cli-todo-approval',
       backend: backendMode,
-      cwd: settings.cwd,
+      cwd: agentCwd,
     },
     // values 用于渲染完整状态，messages/tools 用于展示模型和工具的实时进度。
     streamMode: ['values', 'messages', 'tools'] as Array<
@@ -150,6 +198,7 @@ export async function createAgentRuntime(settings: CliSettings, sessionStore: Se
   return {
     agent,
     backendMode,
+    agentCwd,
     config,
     mcpStatus: mcp.status,
   };

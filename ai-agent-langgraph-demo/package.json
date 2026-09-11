@@ -84,6 +84,7 @@
     "@opentelemetry/sdk-trace-node": "^2.10.0",
     "deepagents": "^1.13.2",
     "dotenv": "^17.4.2",
+    "e2b": "^2.49.0",
     "express": "^5.2.1",
     "ink": "^5.2.1",
     "langchain": "^1.5.10",

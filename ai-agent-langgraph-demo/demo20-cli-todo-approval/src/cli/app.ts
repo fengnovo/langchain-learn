@@ -25,8 +25,10 @@ function showBanner(settings: CliSettings, runtime: AgentRuntime): void {
     mode:
       runtime.backendMode === 'sandbox'
         ? '☁️ LangSmith 云沙箱'
-        : '💻 本机（真实磁盘 + shell）',
-    cwd: settings.cwd,
+        : runtime.backendMode === 'e2b'
+          ? '☁️ E2B 云沙箱'
+          : '💻 本机（真实磁盘 + shell）',
+    cwd: runtime.agentCwd,
     skills:
       settings.skillCount > 0
         ? `${settings.skillCount} 个技能（${settings.skillsHostDir}）`
@@ -70,7 +72,7 @@ export async function runCli(): Promise<void> {
   const taskRunner = new TaskRunner(runtime, sessionStore);
 
   tuiSetHeader(
-    `DeepAgents Coding Agent · 模式: ${runtime.backendMode === 'sandbox' ? '☁️ 云沙箱' : '💻 本机'} · 工作目录: ${settings.cwd}`,
+    `DeepAgents Coding Agent · 模式: ${runtime.backendMode === 'sandbox' ? '☁️ LangSmith' : runtime.backendMode === 'e2b' ? '☁️ E2B' : '💻 本机'} · 工作目录: ${runtime.agentCwd}`,
   );
   startTui();
   showBanner(settings, runtime);

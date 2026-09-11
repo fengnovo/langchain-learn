@@ -32,6 +32,11 @@ async function chat(message: string, threadId = 'default'): Promise<void> {
 }
 
 async function main(): Promise<void> {
+   // 测试1：简单对话
+  console.log('=== 测试0: 回忆对话 ===');
+  await chat('你好，我们刚才说了啥', 'test-chat');
+
+
   // 测试1：简单对话
   console.log('=== 测试1: 简单对话 ===');
   await chat('你好，请介绍一下自己', 'test-chat');
@@ -39,13 +44,16 @@ async function main(): Promise<void> {
   // 测试2：代码执行（写文件 + 在沙箱中运行）
   console.log('\n=== 测试2: 代码执行 ===');
   await chat(
-    '在 workspace 文件夹中，创建一个 Python 文件打印 Hello World 字符串，然后运行它。',
-    'test-code',
-  );
+      '在 workspace 文件夹中，创建一个 Python 文件打印 Hello World 字符串，然后运行它。',
+      'test-code',
+    );
 
   // 测试3：查看文件
   console.log('\n=== 测试3: 查看文件 ===');
   await chat('查看一下当前工作目录中有什么文件', 'test-file');
+
+  console.log('=== 测试4: 回忆 ===');
+  await chat('你好，我们刚才做了啥', 'test-chat');
 }
 
 main().catch((e) => {
