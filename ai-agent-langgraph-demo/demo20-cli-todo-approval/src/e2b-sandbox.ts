@@ -19,7 +19,7 @@
  * 其他方法（ls/read/grep/glob/write/delete/edit）由基类基于 execute() 与
  * upload/download 默认实现，无需重写。
  */
-import { Sandbox as E2BSandboxInstance } from 'e2b';
+import { CommandExitError, Sandbox as E2BSandboxInstance } from 'e2b';
 import {
   BaseSandbox,
   type ExecuteResponse,
@@ -118,12 +118,24 @@ export class E2BSandbox extends BaseSandbox {
       };
     }
 
-    const result = await this.#sandbox.commands.run(command, {
-      timeoutMs: 180_000,
-    });
+    // E2B commands.run 在退出码非 0 时会抛 CommandExitError（而非返回 exitCode）。
+    // deepagents 的契约是「返回带 exitCode 的结果」，让上层决定是否视为失败，
+    // 因此这里把 CommandExitError 转成普通结果，避免整个 Agent 任务中断。
+    try {
+      const result = await this.#sandbox.commands.run(command, {
+        timeoutMs: 180_000,
+      });
+      return this.#toExecuteResponse(result.stdout ?? '', result.stderr ?? '', result.exitCode ?? 0);
+    } catch (e) {
+      if (!(e instanceof CommandExitError)) throw e;
+      return this.#toExecuteResponse(e.stdout ?? '', e.stderr ?? '', e.exitCode ?? 1);
+    }
+  }
 
-    const stdout = result.stdout ?? '';
-    const stderr = result.stderr ?? '';
+  /**
+   * 合并 stdout/stderr 并做字节截断，返回 deepagents 约定的 ExecuteResponse。
+   */
+  #toExecuteResponse(stdout: string, stderr: string, exitCode: number): ExecuteResponse {
     const combined = stderr.length > 0 ? `${stdout}\n${stderr}` : stdout;
 
     let output = combined;
@@ -133,11 +145,7 @@ export class E2BSandbox extends BaseSandbox {
       truncated = true;
     }
 
-    return {
-      output,
-      exitCode: result.exitCode ?? 0,
-      truncated,
-    };
+    return { output, exitCode, truncated };
   }
 
   /**

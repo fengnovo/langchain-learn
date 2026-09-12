@@ -52,8 +52,14 @@ function createAskUserTool() {
           .min(2)
           .max(9)
           .describe('2 到 9 个互斥选项，推荐项放在第一项'),
-        multiple: z.boolean().default(false).describe('是否允许用户勾选多个选项'),
-        allowCustom: z.boolean().default(false).describe('是否显示“其他”并允许用户输入自定义答案'),
+        multiple: z
+          .boolean()
+          .default(false)
+          .describe('是否允许用户勾选多个选项'),
+        allowCustom: z
+          .boolean()
+          .default(false)
+          .describe('是否显示“其他”并允许用户输入自定义答案'),
       }),
     },
   );
@@ -75,7 +81,12 @@ function createGetPublicUrlTool(sandbox: E2BSandbox) {
       description:
         '获取 E2B 沙箱内指定端口对应的公网可访问 URL。在用 execute 起好 HTTP 服务（如 `python3 -m http.server 3000 &`）后调用此工具，把返回的 URL 回复给用户在浏览器打开。',
       schema: z.object({
-        port: z.number().int().min(1).max(65535).describe('沙箱内 HTTP 服务监听的端口号'),
+        port: z
+          .number()
+          .int()
+          .min(1)
+          .max(65535)
+          .describe('沙箱内 HTTP 服务监听的端口号'),
       }),
     },
   );
@@ -108,8 +119,15 @@ async function loadMcpTools(configPath: string): Promise<{
 }
 
 /** 创建 Agent 及其运行配置，不包含 TUI、会话选择和任务循环。 */
-export async function createAgentRuntime(settings: CliSettings, sessionStore: SessionStore) {
-  const { backend, mode: backendMode, sandboxCwd } = await createBackend(settings.cwd);
+export async function createAgentRuntime(
+  settings: CliSettings,
+  sessionStore: SessionStore,
+) {
+  const {
+    backend,
+    mode: backendMode,
+    sandboxCwd,
+  } = await createBackend(settings.cwd);
   const skillSources = settings.skillCount > 0 ? ['../skills/'] : [];
   const mcp = await loadMcpTools(settings.mcpConfigPath);
   const checkpointer = SqliteSaver.fromConnString(sessionStore.dbPath);
@@ -124,7 +142,8 @@ export async function createAgentRuntime(settings: CliSettings, sessionStore: Se
   const memorySources = isCloudSandbox ? [] : ['../AGENTS.md'];
 
   // E2B 模式下注入 get_public_url 工具，让 Agent 能查到端口对应的公网访问地址
-  const extraTools = backend instanceof E2BSandbox ? [createGetPublicUrlTool(backend)] : [];
+  const extraTools =
+    backend instanceof E2BSandbox ? [createGetPublicUrlTool(backend)] : [];
 
   const agent = createDeepAgent({
     model,
@@ -165,7 +184,11 @@ export async function createAgentRuntime(settings: CliSettings, sessionStore: Se
     ].join('\n'),
     middleware: [
       todoListMiddleware(),
-      modelCallLimitMiddleware({ runLimit: 60, threadLimit: 300, exitBehavior: 'end' }),
+      modelCallLimitMiddleware({
+        runLimit: 60,
+        threadLimit: 300,
+        exitBehavior: 'end',
+      }),
       humanInTheLoopMiddleware({
         interruptOn: {
           write_file: { allowedDecisions: ['approve', 'reject'] },
